@@ -1,4 +1,4 @@
-from fastapi import FastAPI,File,UploadFile
+from fastapi import FastAPI,File,UploadFile,Form
 from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 from review_star_prediction import *
 from isbn_ocr import *

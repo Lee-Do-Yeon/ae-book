@@ -1,5 +1,7 @@
 package com.c201.aebook.api.listener.job;
 
+import java.util.Date;
+
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -16,7 +18,10 @@ public class BookIntegrationJobListener implements JobExecutionListener {
 	 */
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
-		log.info("before job execution = " + jobExecution);
+		String jobName = jobExecution.getJobInstance().getJobName();
+		log.info(" ================= [ JOB START ] ================ ");
+		log.info(jobName + " : before job execution");
+		log.info(" ================= [ JOB START ] ================ ");
 	}
 
 	/**
@@ -24,8 +29,20 @@ public class BookIntegrationJobListener implements JobExecutionListener {
 	 */
 	@Override
 	public void afterJob(JobExecution jobExecution) {
+		String jobName = jobExecution.getJobInstance().getJobName();
+		long jobInstanceId = jobExecution.getJobInstance().getInstanceId();
+		Date jobExecutionCreateTime = jobExecution.getCreateTime();
+		Date jobExecutionStartTime = jobExecution.getStartTime();
+		Date jobExecutionEndTime = jobExecution.getEndTime();
+		
+		log.info(" ================= [ JOB END ] ================ ");
 		log.info("after job execution = " + jobExecution);
-
+		log.info(" ================= [ JOB END ] ================ ");
+		log.info("jobName : " + jobName);
+		log.info("jobInstanceId : " + jobInstanceId);
+		log.info("jobExecutionCreateTime : " + jobExecutionCreateTime);
+		log.info("jobExecutionStartTime : " + jobExecutionStartTime);
+		log.info("jobExecutionEndTime : " + jobExecutionEndTime);
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED){
 			//job success
 			log.info("job success => " + jobExecution.getJobInstance().getJobName());
@@ -33,6 +50,7 @@ public class BookIntegrationJobListener implements JobExecutionListener {
 			//job failure
 			log.info("job failed =>" + jobExecution.getJobInstance().getJobName());
 		}
+		log.info(" ================= [ JOB END ] ================ ");
 		System.exit(0);
 	}
 

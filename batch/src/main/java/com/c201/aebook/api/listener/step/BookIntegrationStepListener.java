@@ -1,5 +1,7 @@
 package com.c201.aebook.api.listener.step;
 
+import java.util.Date;
+
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -17,7 +19,11 @@ public class BookIntegrationStepListener implements StepExecutionListener {
 	 */
 	@Override
 	public void beforeStep(StepExecution stepExecution) {
-		log.info("before step execution");
+		String stepName = stepExecution.getStepName();
+		
+		log.info(" ================= [ STEP START ] ================ ");
+		log.info(stepName + " : before step execution");
+		log.info(" ================= [ STEP START ] ================ ");
 		
 	}
 
@@ -26,11 +32,33 @@ public class BookIntegrationStepListener implements StepExecutionListener {
 	 */
 	@Override
 	public ExitStatus afterStep(StepExecution stepExecution) {
-		log.info("after step execution");
 		String stepName = stepExecution.getStepName();
-		ExitStatus exitStatus = stepExecution.getExitStatus();
+		int commitCount = stepExecution.getCommitCount();
+		int readCount = stepExecution.getReadCount();
+		int writeCount = stepExecution.getWriteCount();
+		int readSkipCount = stepExecution.getReadSkipCount();
+		int processSkipCount = stepExecution.getProcessSkipCount();
+		int writeSkipCount = stepExecution.getWriteSkipCount();
+		Date startDate = stepExecution.getStartTime();
+		Date endDate = stepExecution.getEndTime();
+		int rollbackCount = stepExecution.getRollbackCount();
+		
+		log.info(" ================= [ STEP END ] ================ ");
+		log.info("after step execution = " + stepExecution);
+		log.info(" ================= [ STEP END ] ================ ");
+		log.info(stepName + " : before step execution");
+		log.info("commitCount of stepExecution : " + commitCount);
+		log.info("readCount of stepExecution : " + readCount);
+		log.info("writeCount of stepExecution : " + writeCount);
+		log.info("readSkipCount of stepExecution(exception was thrown) : " + readSkipCount);
+		log.info("processSkipCount of stepExecution(exception was thrown) : " + processSkipCount);
+		log.info("writeSkipCount of stepExecution(exception was thrown) : " + writeSkipCount);
+		log.info("rollbackCount of stepExecution : " + rollbackCount);
+		log.info("startDate of stepExecution : " + startDate);
+		log.info("endDate of stepExecution : " + endDate);
+		log.info(" ================= [ STEP END ] ================ ");
 
-		return exitStatus;
+		return ExitStatus.COMPLETED;
 	}
 
 }

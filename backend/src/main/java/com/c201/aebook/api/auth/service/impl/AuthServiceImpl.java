@@ -159,7 +159,7 @@ public class AuthServiceImpl implements AuthService {
             user = UserEntity.builder()
                     .kakaoId(profile.getId())
                     .nickname(profile.getKakao_account().getProfile().getNickname())
-                    .phone(profile.kakao_account.getPhone_number())
+                    .phone(profile.getKakao_account().getPhone_number())
                     .profileUrl(profile.getKakao_account().getProfile().getProfile_image_url())
                     .status(1)
                     .build();
