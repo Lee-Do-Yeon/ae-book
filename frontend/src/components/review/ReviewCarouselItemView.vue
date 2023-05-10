@@ -44,6 +44,7 @@ export default {
   color: var(--ae-navy);
   font-size: 1.1em;
   margin: 1.3em 2.5em;
+  word-break: break-all; /* 단어 단위가 아닌 문자 단위로 줄 바꿈 */
 }
 .item-score {
   margin-bottom: 1.5em;

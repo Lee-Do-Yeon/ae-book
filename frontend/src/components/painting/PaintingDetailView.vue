@@ -1,9 +1,9 @@
 <template>
 <div>
-  <input type="text" v-model="painting.title">
-  <br>
+  <input class="input-box" type="text" v-model="painting.title">
   <button class="ae-btn btn-red" @click="updatePaintingTitle({paintingId: painting.id, title: {title:painting.title}})">수정</button>
-  <img v-bind:src="painting.fileUrl">
+  <br>
+  <img class="painting-img" v-bind:src="painting.fileUrl">
 </div>
 </template>
 
@@ -27,6 +27,17 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.painting-img {
+  max-width: 700px;
+  margin: 50px 0px;
+}
+
+.input-box {
+  border-radius: 30px;
+  border: 1px solid var(--ae-red);
+  height: 35px;
+  padding-left: 10px;
+}
 
 </style>

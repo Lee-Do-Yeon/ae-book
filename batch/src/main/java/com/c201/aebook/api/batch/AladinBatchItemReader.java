@@ -50,6 +50,8 @@ public class AladinBatchItemReader implements ItemReader<BookEntity> {
 	private String API_KEY;
 	private int nextIndex = 0;
 	private List<BookEntity> bookList = new ArrayList<>();
+	private final int OUT_OF_STOCK_FILTER = 1;
+	private final String COVER_SIZE = "Big";
 
 	@Autowired
 	public AladinBatchItemReader(RestTemplate restTemplate) {
@@ -98,7 +100,9 @@ public class AladinBatchItemReader implements ItemReader<BookEntity> {
 				.queryParam("Version", "20131101")
 				.queryParam("SubSearchTarget", SUB_SEARCH_TARGET)
 				.queryParam("OptResult", "usedList")
-				.queryParam("Output", outputType);
+				.queryParam("Output", outputType)
+				.queryParam("outofStockfilter", OUT_OF_STOCK_FILTER)
+				.queryParam("Cover", COVER_SIZE);
 
 			NodeList itemNodes = getItemElementByUrl(builder, "item");
 
@@ -122,6 +126,10 @@ public class AladinBatchItemReader implements ItemReader<BookEntity> {
 		ParserConfigurationException,
 		IOException,
 		SAXException {
+
+		String adultBookCheck = getChildText(itemNode, "adult");
+
+		if(adultBookCheck == "true") return null;//성인 책인 경우
 
 		String title = getChildText(itemNode, "title");
 		String author = getChildText(itemNode, "author");

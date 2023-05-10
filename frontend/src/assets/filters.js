@@ -10,4 +10,8 @@ const pricePoint = value => {
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-export { shortText, pricePoint }
+const removeTitlePrefix = value => {
+  return value.replace('[중고] ', '')
+}
+
+export { shortText, pricePoint, removeTitlePrefix }

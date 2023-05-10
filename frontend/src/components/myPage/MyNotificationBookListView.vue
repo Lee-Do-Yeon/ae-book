@@ -3,11 +3,11 @@
     <h1 class="subject">알림 신청한 책 목록</h1>
     <div style="height:2px; background-color: #E0E0E0;"></div>
     <ModalView :modalShow="isModalVisible" @close-modal="closeModal">
-      <notification-detail-view :notificationId="notificationId" :page="this.request.page"/>
+      <notification-detail-view :notificationId="notificationId" :page="this.request.page" :isbn="isbn"/>
       <notification-modal-button :notificationId="notificationId" :request="this.request" @close="closeModal"></notification-modal-button>
     </ModalView>
     <div class="notification-container">
-      <div v-for="notification in notificationList" :key="notification.id" @click="showModal(notification.id)">
+      <div v-for="notification in notificationList" :key="notification.id" @click="showModal(notification.id, notification.isbn)">
         <list-item
             :item="notification"
           >
@@ -44,6 +44,7 @@ export default {
     return {
       isModalVisible: false,
       notificationId: null,
+      isbn: null,
       request: {
         page: 0,
         size: 3,
@@ -64,8 +65,9 @@ export default {
       this.request['page'] = page - 1
       this.getBookNotificationList(this.request)
     },
-    showModal (notificationId) {
+    showModal (notificationId, isbn) {
       this.notificationId = notificationId
+      this.isbn = isbn
       this.getBookNotificationDetail(notificationId)
       this.isModalVisible = true
     },

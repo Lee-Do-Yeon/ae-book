@@ -23,7 +23,7 @@ public class NotificationValidator extends CommonValidator {
 	}
 
 	public void validateNotificationUpdateRequestDTO(NotificationUpdateRequestDTO notificationUpdateRequestDTO) {
-		checkIntType(notificationUpdateRequestDTO.getUpperLimit(), "금액 상한선");
+		checkNotificationIntType(notificationUpdateRequestDTO.getUpperLimit(), "금액 상한선");
 		checkNotificationType(notificationUpdateRequestDTO.getNotificationType(), "알림 타입");
 	}
 

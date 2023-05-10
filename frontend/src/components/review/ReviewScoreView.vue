@@ -5,8 +5,8 @@
       v-for="index in 5"
       :key="index"
     >
-      <span v-if="index <= starScore">🧡</span>
-      <span v-if="index > starScore">🤍</span>
+      <span v-if="index <= score">🧡</span>
+      <span v-if="index > score">🤍</span>
     </div>
   </div>
 </template>
@@ -14,15 +14,7 @@
 <script>
 export default {
   name: 'ReviewScoreView',
-  props: ['score'],
-  data () {
-    return {
-      starScore: this.score
-    }
-  },
-  methods: {
-
-  }
+  props: ['score']
 }
 </script>
 

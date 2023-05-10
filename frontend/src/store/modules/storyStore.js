@@ -1,4 +1,4 @@
-import { searchStory, searchDetailStory, registerStory } from '@/api/story'
+import { searchStory, registerStory } from '@/api/story'
 
 const storyStore = {
   namespaced: true,
@@ -38,31 +38,20 @@ const storyStore = {
     async getStoryList ({commit}, request) {
       await searchStory(request)
         .then(({data}) => {
-          console.log(data)
           commit('SET_PAGE_SETTING', data.result)
           commit('SET_LIST', data.result.content)
         })
         .catch(error => {
-          console.log(error)
-        })
-    },
-    async getStoryDetail ({ commit }, request) {
-      await searchDetailStory(request)
-        .then(({ data }) => {
-          commit('SET_STORY', data.result)
-        })
-        .catch(error => {
-          alert(error)
+          console.error(error)
         })
     },
     async saveStory ({ commit }, request) {
       await registerStory(request)
         .then(({ data }) => {
           commit('SET_STORY', data.result)
-          console.log(data.result)
         })
         .catch(error => {
-          console.log(error)
+          console.error(error)
         })
     }
   }

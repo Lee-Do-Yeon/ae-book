@@ -1,11 +1,11 @@
 <template>
-  <div class="review-item" :style="{ height: isExpanded ? 'auto' : '150px' }">
+  <div class="review-item" :style="{ height: isExpanded ? 'auto' : '170px' }">
     <div class="review-group">
       <div class="item-group-1">
         <div class="item-info">
           <div>
             <div class="book-title">
-            {{ review.title.slice(5, review.title.length)}}
+            {{ review.title | removeTitlePrefix }}
               <div class="item-updated-at">
               {{ review.updatedAt.slice(0, 10) }}
               </div>
@@ -37,12 +37,17 @@
           </p>
         </div>
         </div>
-        <textarea v-show="isModify"
-          id="reviewContent"
-          class="item-modify"
-          rows="3"
-          v-model="updateContent">
-        </textarea>
+        <div>
+          <textarea v-show="isModify"
+            id="reviewContent"
+            class="item-modify"
+            rows="3"
+            v-model="updateContent"
+            ref="reviewContent"
+            >
+          </textarea>
+          <div v-show="isModify" class="limit">현재 {{ this.updateContent.length }} 자 입니다.</div>
+        </div>
       </div>
       <div class='btn-group'>
         <div v-if="!isModify">
@@ -58,11 +63,12 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import ReviewScoreView from './ReviewScoreView.vue'
 import ReviewModifyScoreView from './ReviewModifyScoreView.vue'
 
 const reviewStore = 'reviewStore'
+const bookStore = 'bookStore'
 
 export default {
   name: 'ReviewMyItemView',
@@ -83,6 +89,9 @@ export default {
       isExpanded: false
     }
   },
+  computed: {
+    ...mapState(bookStore, ['book'])
+  },
   methods: {
     ...mapActions(reviewStore, ['modifyReviewAction', 'deleteReviewAction']),
     async checkValue () {
@@ -91,6 +100,12 @@ export default {
 
       if (!this.updateContent) {
         msg = '내용을 입력해주세요'
+        err = false
+        this.$refs.reviewContent.focus()
+      }
+
+      if (this.updateContent.length > 300) {
+        msg = '리뷰 내용을 줄여주세요. \n' + '현재 입력된 글자는 ' + this.updateContent.length + '자 입니다.'
         err = false
         this.$refs.reviewContent.focus()
       }
@@ -111,6 +126,7 @@ export default {
         await this.modifyReviewAction(payload)
         await this.$emit('paging', this.page + 1)
 
+        this.book.scoreSum += this.updateScore - this.review.score
         // 2. 수정 반영해서 리스트 가져오기 : emit 완료보다 상태변경이 빨라서 딜레이 설정
         setTimeout(() => {
           this.truncateContent()
@@ -130,11 +146,13 @@ export default {
       this.updateScore = newScore
     },
     async deleteReview () {
-      if (confirm('리얼루다가 삭제하시것슴니까 ?!?!?!?!!!?')) {
+      if (confirm('삭제하시겠습니까?')) {
         await this.deleteReviewAction(this.review.id)
       }
 
       this.$emit('paging', this.page + 1)
+      this.book.scoreSum -= this.review.score
+      this.book.reviewCount -= 1
     },
     check (index) {
       this.review.score = index
@@ -167,6 +185,10 @@ export default {
 </script>
 
 <style scoped>
+.limit {
+  text-align: right;
+  margin-right: 22px;
+}
 .item-content.is-expanded {
   height: auto !important;
   overflow: visible !important;
@@ -179,6 +201,7 @@ export default {
   width: 97.5%;
   overflow: hidden;
   display: flex;
+  word-break: break-all; /* 단어 단위가 아닌 문자 단위로 줄 바꿈 */
 }
 .more-content {
   border: none;

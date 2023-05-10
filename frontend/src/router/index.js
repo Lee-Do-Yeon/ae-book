@@ -31,7 +31,7 @@ export default new Router({
         {
           path: 'list',
           name: 'StoryList',
-          component: () => import('@/components/story/StoryListView2')
+          component: () => import('@/components/story/StoryListView')
         },
         {
           path: 'keyword',
@@ -125,8 +125,8 @@ export default new Router({
         },
         {
           path: 'story',
-          name: 'StoryListView',
-          component: () => import('@/components/story/StoryListView')
+          name: 'MyStoryListView',
+          component: () => import('@/components/myPage/MyStoryListView')
         },
         {
           path: 'notification',

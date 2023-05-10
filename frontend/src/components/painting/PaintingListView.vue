@@ -1,9 +1,9 @@
 <template>
   <div>
     <h1>그림 목록</h1>
-    <button v-if="isLoginUser" @click="onClickList('LINE')" class="ae-btn">선화 리스트 보기</button>
+    <button v-if="isLoginUser" @click="onClickList('LINE')" class="ae-btn">선화 리스트</button>
     <button v-else class="ae-btn disabled" disabled>선화</button>
-    <button v-if="isLoginUser" @click="onClickList('COLOR')" class="ae-btn">그림 리스트 보기</button>
+    <button v-if="isLoginUser" @click="onClickList('COLOR')" class="ae-btn">그림 리스트</button>
     <button v-else class="ae-btn disabled" disabled>그림</button>
     <router-link to="/painting/generate"><button class="ae-btn btn-red">선화 만들러 가기</button></router-link>
     <ModalView :modalShow="isModalVisible" @close-modal="closeModal">

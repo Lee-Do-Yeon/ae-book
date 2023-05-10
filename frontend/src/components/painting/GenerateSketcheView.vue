@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input type="file" @change="onFileChange" />
+    <input type="file" @change="onFileChange" accept = ".jpg, ,.jpeg, .png"/>
     <div class="image-container">
       <div class="before">
         <p>원본</p>

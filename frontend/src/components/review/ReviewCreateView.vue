@@ -201,13 +201,10 @@ export default {
           return this.getReviewBookListAction(request)
         })
         .then(() => {
-          // this.$emit('get-my-review')
-          // setTimeout(() => {
-          //   this.$emit('close-modal')
-          // }, 300)
           this.$emit('close-modal')
           this.$emit('get-my-review')
           this.book.reviewCount += 1
+          this.book.scoreSum += this.form.score
         })
         .catch((err) => {
           console.log(err)

@@ -1,7 +1,5 @@
 <template>
 <div>
-  <button v-if="storyReady" @click="goReadStory" class="ae-btn btn-red">동화 보러 가기</button>
-  <h1 v-else>동화가 만들어지는 중</h1>
   <div class="container">
     <!-- 왼쪽 -->
     <div class="container-left">
@@ -45,11 +43,13 @@
     <div class="tools">
       <input id="line-width" @change="onLineWidthChange" type="range" min="5" max="20" value="10">
       <div>
-        <img src="@/assets/images/icons/reset.png" width="35px" id="reset-btn" @click="onResetClick">
-        <img src="@/assets/images/icons/eraser.png" width="35px" id="eraser-btn" @click="onEraserClick">
-        <img src="@/assets/images/icons/brush.png" width="35px" id="brush-btn" @click="onBrushClick">
+        <img src="@/assets/images/icons/reset.png" width="40px" id="reset-btn" @click="onResetClick">
+        <img src="@/assets/images/icons/eraser.png" width="40px" id="eraser-btn" @click="onEraserClick" :class="{'now-tool': mode == 'eraser'}">
+        <img src="@/assets/images/icons/brush.png" width="40px" id="brush-btn" @click="onBrushClick" :class="{'now-tool': mode == 'brush'}">
       </div>
     </div>
+    <button v-if="storyReady" @click="goReadStory" class="ae-btn btn-red">동화 보러 가기</button>
+    <button v-else class="ae-btn btn-navy" style="background-color: lightgray; color: var(--ae-navy)" disabled>동화 만드는 중</button>
   </div>
   <!-- 오른쪽 -->
   </div>
@@ -63,6 +63,7 @@ export default {
   name: 'StoryPaintingBoardView',
   data () {
     return {
+      clickedTool: '',
       keyword: '',
       storyResult: '',
       sound_filename: '',
@@ -212,6 +213,7 @@ export default {
   padding: 0 100px;
   display: flex;
   flex-direction: row;
+  margin-top: 45px;
 }
 
 .container-left {
@@ -223,7 +225,7 @@ export default {
   width: 40%;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: space-between;
 }
 
 #canvas {
@@ -256,5 +258,17 @@ export default {
 h1 {
   font-weight: 800;
   margin: 10px 0px;
+}
+
+#palette, .tools {
+  background-color: white;
+  border-radius: 30px;
+  padding: 20px 0px;
+}
+
+.now-tool{
+  width: 50px;
+  border: 2px solid var(--ae-red);
+  border-radius: 100%;
 }
 </style>

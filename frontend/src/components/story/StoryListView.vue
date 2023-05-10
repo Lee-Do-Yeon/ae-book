@@ -1,14 +1,14 @@
 <template>
   <div>
-    <h2>나의 동화 목록</h2>
-    <!-- <div horizontal v-for="story in storyList" :key="story.storyId">
-      <h3 @click="showModal(story.storyId)">{{ story.title }}</h3>
-      <img v-bind:src="story.imgUrl" alt="story image" />
-    </div> -->
+    <h1>동화책 목록</h1>
+    <router-link to="/story/keyword"><button class="ae-btn btn-red">동화 만들러 가기</button></router-link>
     <ModalView :modalShow="isModalVisible" @close-modal="closeModal">
       <StoryDetailView />
     </ModalView>
-    <div class="story-container">
+    <div v-if="isLoginUser === false" class="story-container">
+      로그인한 유저만 확인 가능합니다.
+    </div>
+    <div v-else class="story-container">
       <div v-for="story in storyList" :key="story.storyId" @click="showModal(story.storyId)">
         <list-item
         :item="story"
@@ -47,9 +47,11 @@ export default {
       isModalVisible: false
     }
   },
-
   mounted () {
-    this.getStoryList(this.request)
+    if (sessionStorage.getItem('isLoginUser') === 'true') {
+      this.isLoginUser = true
+      this.getStoryList(this.request)
+    }
   },
   computed: {
     ...mapState(storyStore, ['storyList', 'storyPageSetting']),
@@ -87,5 +89,14 @@ export default {
 .pagination-container {
   display:flex;
   justify-content: center;
+}
+
+.disabled{
+  background-color: lightgray;
+}
+
+h1 {
+  font-weight: 800;
+  margin: 10px 0px;
 }
 </style>

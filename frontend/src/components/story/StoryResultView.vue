@@ -62,18 +62,20 @@ export default {
     playAudio (stop) {
       if (stop) {
         this.audio.play()
+        this.stop = !stop
       }
-      this.stop = !stop
     },
     stopAudio (stop) {
       if (stop === false) {
         this.audio.pause()
+        this.stop = !stop
       }
-      this.stop = !stop
     },
     restartAudio () {
+      this.audio.pause()
       this.audio.currentTime = 0
       this.audio.play()
+      this.stop = !stop
     },
     canvasToFile (canvas, milliseconds) {
       // canvas -> dataURL

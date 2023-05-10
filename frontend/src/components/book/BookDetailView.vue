@@ -1,7 +1,7 @@
 <template>
   <div v-if="book">
     <div class="book-container">
-      <h1>{{ book.title }}</h1>
+      <h1>{{ book.title | removeTitlePrefix }}</h1>
       <p>{{ book.author }} | {{ book.publisher }} | {{ book.publishDate }}</p>
       <div class="bar"></div>
       <div class="main-info">
@@ -14,19 +14,23 @@
           </div>
           <div class="red-bar"></div>
           <p><span style="font-weight:bold">ISBN</span> {{ book.isbn }}</p>
-          <div class="rating"><review-score-view :score="parseInt(book.scoreSum / book.reviewCount)"></review-score-view></div>
-          <!-- TODO: 비로그인시 알림 설정 버튼 안보이도록  -->
-          <button type="button" class="ae-btn btn-navy" v-if=book.notification @click="cancelNotification(book.notificationId)">알림 신청중</button>
-          <!-- <button type="button" class="ae-btn" v-else v-b-modal.modal-save-notification>알림 신청</button> -->
-          <button type="button" class="ae-btn" v-else @click="checkLoginAndOpenModal">알림 신청</button>
-          <button type="button" class="ae-btn btn-red" @click="onClickRedirect(book.aladinUrl)">구매하러가기 ></button>
+          <div class="rating"><review-score-view :score="book.reviewCount === 0? 0 : parseInt(book.scoreSum / book.reviewCount)"></review-score-view></div>
+          <div class="btn-box">
+            <!-- TODO: 비로그인시 알림 설정 버튼 안보이도록  -->
+            <button type="button" class="ae-btn btn-navy" v-if=book.notification @click="cancelNotification(book.notificationId)">알림 신청중</button>
+            <!-- <button type="button" class="ae-btn" v-else v-b-modal.modal-save-notification>알림 신청</button> -->
+            <button type="button" class="ae-btn" v-else @click="checkLoginAndOpenModal">알림 신청</button>
+            <button type="button" class="ae-btn btn-red" @click="onClickRedirect(book.aladinUrl)">구매하러가기 →</button>
+          </div>
         </div>
       </div>
       <div class="bar"></div>
-      <p style="font-weight: bold; text-align: left; font-size: 24px; color:var(--ae-navy)">책 소개</p>
-      <p>{{ book.description }}</p>
+      <div class="book-desc">
+        <div class="desc-left"><p style="font-weight: bold; text-align: left; font-size: 24px; color:var(--ae-navy)">책 소개</p></div>
+        <div class="desc-right">{{ book.description }}</div>
+      </div>
       <div class="bar"></div>
-      <p style="font-weight: bold; text-align: left; font-size: 24px; color:var(--ae-navy); display:flex;">총 리뷰 개수 <span style="color:var(--ae-red)">{{ book.reviewCount }}</span>개
+      <p style="font-weight: bold; text-align: left; font-size: 24px; color:var(--ae-navy); display:flex;">총 리뷰 개수&nbsp;<span style="color:var(--ae-red)">{{ book.reviewCount }}</span>개
        <span class='btn-group' v-if='!isLogin'>
         <button class='ae-btn btn-red review-btn' @click="goTo('Login')">리뷰 등록</button>
        </span>
@@ -44,10 +48,6 @@
     </review-create-modal-view>
 
     <!-- 알림 신청 모달 -->
-    <!-- <ModalView :modalShow="isNotificationModalVisible" @close-modal="closeNotificationModal">
-      <notification-create-view :isbn="isbn"/>
-      <notification-create-modal-button @close="closeNotificationModal"></notification-create-modal-button>
-    </ModalView> -->
     <b-modal
       id="modal-save-notification"
       ref="modal"
@@ -62,18 +62,18 @@
       <form ref="form" @submit.stop.prevent="handleSubmit">
         <b-form-group v-slot="{ ariaDescribedby }" class="text-left">
           <b-form-group>
-            <b-form-radio v-model="selected" :aria-describedby="ariaDescribedby" name="some-radios" value="D">최저가</b-form-radio>
+            <b-form-radio v-model="selected" :aria-describedby="ariaDescribedby" name="some-radios" value="D">최저가 (현재 최저가 : {{ book.price }}원)</b-form-radio>
           </b-form-group>
 
           <b-form-group>
             <b-form-radio v-model="selected" :aria-describedby="ariaDescribedby" name="some-radios" value="S">사용자 지정 최저가</b-form-radio>
             <b-form-group
-              label="알림 신청 가격"
+              label="지정 가격 : "
               label-for="upperLimit-input"
               invalid-feedback="알림 신청 가격을 입력하세요."
               :state="upperLimitState"
               v-if="selected === 'S'"
-              class="d-flex align-items-center mr-3 mt-1"
+              class="d-flex align-items-center mr-3 mt-2 ml-4"
             >
               <b-form-input
                 id="upperLimit-input"
@@ -142,7 +142,6 @@ export default {
     } else {
       this.isNotifications = this.book.notification
     }
-    console.log(this.isNotifications)
   },
   computed: {
     ...mapState(bookStore, ['book']),
@@ -157,9 +156,7 @@ export default {
   },
   mounted () {
     this.getBookDetail(this.isbn)
-    this.book = this.getBook
     this.isNotifications = this.book.notification
-
     console.log('mounted')
     this.isLogin = JSON.parse(sessionStorage.getItem('isLoginUser'))
     if (this.isLogin) {
@@ -189,15 +186,9 @@ export default {
       }
       this.isModalVisible = true
     },
-    // showNotificationModal () {
-    //   this.isNotificationModalVisible = true
-    // },
     closeModal () {
       this.isModalVisible = false
     },
-    // closeNotificationModal () {
-    //   this.isNotificationModalVisible = false
-    // },
     checkLoginAndOpenModal () {
       const login = sessionStorage.getItem('isLoginUser')
       if (!login) {
@@ -217,6 +208,11 @@ export default {
       this.upperLimitState = null
     },
     handleOk (bvModalEvent) {
+      if (this.selected === '') {
+        alert('알림 신청 타입을 선택해주세요!')
+        bvModalEvent.preventDefault()
+        return
+      }
       bvModalEvent.preventDefault()
       this.handleSubmit()
     },
@@ -231,7 +227,6 @@ export default {
         upperLimit: this.upperLimit,
         notificationType: this.selected
       }
-      console.log(data)
 
       this.notificationSave(data)
         .then(() => {
@@ -243,8 +238,6 @@ export default {
       })
     },
     cancelNotification (notificationId) {
-      console.log('삭제')
-      console.log(notificationId)
       if (confirm('알림을 취소하시겠습니까?')) {
         this.notificationdelete(notificationId)
           .then(() => {
@@ -272,7 +265,7 @@ export default {
   font-size: 45px;
   font-weight: 800;
   text-align: left;
-  margin-top: 30px;
+  margin-top: 45px;
 }
 
 .book-container > p {
@@ -296,7 +289,7 @@ export default {
 }
 
 .sub-info {
-  width: 40%;
+  width: 35%;
   margin-left: 50px;
 }
 
@@ -307,6 +300,9 @@ export default {
 
 .price-info {
   text-align: left;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .price-text {
@@ -326,7 +322,7 @@ export default {
 .red-bar {
   height: 4px;
   background-color: var(--ae-red);
-  width: 400px;
+  width: 100%;
   margin: 10px 0px;
 }
 
@@ -340,5 +336,36 @@ export default {
   text-align: left;
   font-size:25px;
   margin-bottom:50px;
+}
+
+.btn-box {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.btn-box > button {
+  height: 50px;
+}
+
+.btn-box > button:nth-child(1){
+  width: 40%;
+}
+
+.btn-box > button:nth-child(2){
+  width: 60%;
+}
+
+.book-desc {
+  display: flex;
+  flex-direction: row;
+}
+.desc-left {
+  width: 20%;
+}
+.desc-right {
+  width: 80%;
+  overflow-wrap: break-word;
+  text-align: left;
 }
 </style>

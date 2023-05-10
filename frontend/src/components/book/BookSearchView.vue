@@ -4,15 +4,17 @@
         <input  @blur="clickOutsideAutoKeyword" v-model="keyword" placeholder="검색어를 입력하세요" @keyup.enter="onClickSearch"  @input="autoComplete" class="search-input">
         <button @click="onClickSearch" class="ae-btn btn-red">검색</button>
         <ul class="autocomplete" v-if="keyword !== ''">
-          <li v-for="keyword in autoCompleteList" :key="keyword" @mousedown="clickKeyword(keyword)">{{ keyword }}</li>
+          <li v-for="keyword in autoCompleteList" :key="keyword" @mousedown="clickKeyword(keyword)">{{ keyword | removeTitlePrefix }}</li>
         </ul>
     </div>
     <div class="content-container">
       <div class="left">
         <div class="search-option">
-          <input type="checkbox" v-model="searchTargets" value="TITLE">제목<br>
-          <input type="checkbox" v-model="searchTargets" value="AUTHOR">지은이<br>
-          <input type="checkbox" v-model="searchTargets" value="PUBLISHER">출판사<br>
+          <div class="search-option-title">검색옵션</div>
+          <div style="height:1px; background-color: white;"></div>
+          <div><input type="checkbox" v-model="searchTargets" value="TITLE">제목</div>
+          <div><input type="checkbox" v-model="searchTargets" value="AUTHOR">지은이</div>
+          <div><input type="checkbox" v-model="searchTargets" value="PUBLISHER">출판사</div>
         </div>
       </div>
       <div class="right">
@@ -124,6 +126,7 @@ export default {
 .content-container{
   display: flex;
   flex-direction: row;
+  margin-top: 60px;
 }
 
 .left {
@@ -149,14 +152,21 @@ export default {
 
 .search-option{
   width: 80%;
-  height: 200px;
   background-color: var(--main-yellow);
   border-radius: 20px;
   padding: 20px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 .search-option > * {
-  margin-top: 25px;
+  margin: 15px 0px;
+}
+
+.search-option > div > input {
+  margin-right: 5px;
 }
 
 .input-group{
@@ -220,5 +230,11 @@ export default {
   height: 35px;
   border: #ccc 1px solid;
   border-radius: 1%;
+}
+
+.search-option-title {
+  margin: 0px;
+  font-size: 20px;
+  font-weight: 800;
 }
 </style>

@@ -8,7 +8,7 @@
     <div class="right">
       <div class="info">
         <router-link :to="{ name: 'BookDetail', params: { isbn: book.isbn } }">
-          <span class="title">{{ book.title }}</span><br>
+          <span class="title">{{ book.title | removeTitlePrefix }}</span><br>
         </router-link>
         <span>현재 최저가 </span><span class="price">{{ book.price | pricePoint  }}</span><span>원</span><br>
         {{ book.author }} | {{ book.publisher }} | {{ book.publishDate }}

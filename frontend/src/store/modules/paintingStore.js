@@ -46,6 +46,9 @@ const paintingStore = {
     SET_PAGE_SETTING: (state, data) => {
       const { pageable, last, first, totalPages, size, totalElements, numberOfElements, empty } = data
       state.paintingPageSetting = { pageable, last, first, totalPages, size, totalElements, numberOfElements, empty }
+    },
+    ADD_PAINTING: (state, data) => {
+      state.paintingList.push(data)
     }
   },
   actions: {
@@ -53,6 +56,7 @@ const paintingStore = {
       await savePainting(formdata)
         .then(({ data }) => {
           commit('SET_PAINTING', data.result)
+          commit('ADD_PAINTING', data.result)
         })
         .catch(error => {
           console.error(error)

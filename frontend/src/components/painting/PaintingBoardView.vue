@@ -2,8 +2,10 @@
   <div class="container">
     <!-- 왼쪽 -->
     <div class="container-left">
-      <label class="title">제목 : </label>
-      <input type="text" v-model="title">
+      <div class="title-box">
+        <label class="title">제목 </label>
+        <input type="text" v-model="title" class="input-box">
+      </div>
       <canvas id="canvas"
         ref="canvas"
         @mousemove="onMove"
@@ -44,9 +46,9 @@
     <div class="tools">
       <input id="line-width" @change="onLineWidthChange" type="range" min="5" max="20" value="10">
       <div>
-        <img src="@/assets/images/icons/reset.png" width="35px" id="reset-btn" @click="onResetClick">
-        <img src="@/assets/images/icons/eraser.png" width="35px" id="eraser-btn" @click="onEraserClick">
-        <img src="@/assets/images/icons/brush.png" width="35px" id="brush-btn" @click="onBrushClick">
+        <img src="@/assets/images/icons/reset.png" width="30px" id="reset-btn" @click="onResetClick">
+        <img src="@/assets/images/icons/eraser.png" width="30px" id="eraser-btn" @click="onEraserClick" :class="{'now-tool': mode == 'eraser'}">
+        <img src="@/assets/images/icons/brush.png" width="30px" id="brush-btn" @click="onBrushClick" :class="{'now-tool': mode == 'brush'}">
       </div>
     </div>
     <div>
@@ -66,6 +68,7 @@ export default {
   name: 'PaintingBoardView',
   data () {
     return {
+      clickedTool: '',
       canvas: Object,
       ctx: Object,
       isPainting: false,
@@ -73,7 +76,8 @@ export default {
       colorOptions1: ['#ff0000', '#ff8c00', '#ffff00', '#008000'],
       colorOptions2: ['#0000ff', '#800080', '#000080', '#000000'],
       title: '',
-      color: ''
+      color: '',
+      image: null
     }
   },
   computed: {
@@ -86,11 +90,11 @@ export default {
     this.ctx.lineJoin = 'round'
     this.ctx.lineCap = 'round'
     // base64 문자열 이미지 로드
-    const image = new Image()
-    image.crossOrigin = 'anonymous' // cors 설정
-    image.src = this.sketch
-    image.onload = function () {
-      this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height)
+    this.image = new Image()
+    this.image.crossOrigin = 'anonymous' // cors 설정
+    this.image.src = this.sketch
+    this.image.onload = function () {
+      this.ctx.drawImage(this.image, 0, 0, this.canvas.width, this.canvas.height)
     }.bind(this)
   },
   methods: {
@@ -144,11 +148,7 @@ export default {
       this.mode = 'eraser'
     },
     onResetClick () {
-      // 채울 스타일을 적용
-      this.ctx.fillStyle = 'white'
-      // 캔버스 크기의 사각형으로 채우기
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-      this.ctx.beginPath()
+      this.ctx.drawImage(this.image, 0, 0, this.canvas.width, this.canvas.height)
     },
     canvasToFile (canvas) {
       // canvas -> dataURL
@@ -211,6 +211,7 @@ export default {
   padding: 0 100px;
   display: flex;
   flex-direction: row;
+  margin-top: 35px;
 }
 
 .container-left {
@@ -222,7 +223,8 @@ export default {
   width: 20%;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  margin-top: 60px;
 }
 
 #canvas {
@@ -236,6 +238,12 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+
+#palette, .tools {
+  background-color: white;
+  border-radius: 30px;
+  padding: 30px;
 }
 
 .left, .right {
@@ -255,6 +263,33 @@ export default {
 .title {
   font-size: 35px;
   font-weight: 800;
+}
+
+.ae-btn {
+  width: 80px;
+}
+
+.input-box {
+  height: 40px;
+  width: 300px;
+  border-radius: 30px;
+  border: 1px solid var(--ae-navy);
+  padding-left: 10px;
+  margin-left: 13px;
+}
+
+.title-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.now-tool{
+  width: 40px;
+  border: 2px solid var(--ae-red);
+  border-radius: 100%;
 }
 
 </style>

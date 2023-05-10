@@ -12,7 +12,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { getISBNfromPicture } from '@/api/book.js'
+import { getISBNfromPicture, searchByISBN } from '@/api/book.js'
 import ModalView from '@/components/common/ModalView.vue'
 const bookStore = 'bookStore'
 
@@ -34,10 +34,22 @@ export default {
     async getISBNfromPicture (request) {
       await getISBNfromPicture(request)
         .then(({ data }) => {
-          this.$router.push(`/book/detail/${data.data}`)
+          const rexp = /\b\d{10}\b|\b\d{13}\b/
+          if (rexp.test(data.data)) {
+            searchByISBN(request)
+              .then(({data}) => {
+                this.$router.push(`/book/detail/${data.data}`)
+              }).catch(error => {
+                alert('존재하지 않거나 접근이 불가능한 도서입니다.')
+                console.error(error)
+              })
+          } else {
+            alert('ISBN이 올바르지 않습니다.')
+          }
         })
         .catch(error => {
           alert('ISBN이 올바르지 않습니다.')
+          console.error('FastAPI에서 ISBN 인식 오류.')
           console.error(error)
         })
     },
@@ -70,5 +82,9 @@ h1 {
   margin: auto;
   border-radius: 10px;
   border: 1px solid var(--ae-navy);
+}
+
+.photo > img {
+  width: 100%;
 }
 </style>

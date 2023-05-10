@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <footer>
     <div>&nbsp;</div>
     <div class="footer">
       <div style="text-align: left">
@@ -11,7 +11,7 @@
         <span>도서 API 제공 : 알라딘 인터넷서점( www.aladin.co.kr)</span>
       </div>
     </div>
-  </div>
+  </footer>
 </template>
 
 <script>
@@ -20,14 +20,15 @@ export default {
 }
 </script>
 
-<style scoped>
-.footer {
-    background-color: var(--main-yellow);
-    padding: 20px;
-    position: relative;
-    margin-top: auto;
+<style>
+.footer{
+  background-color: var(--main-yellow);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding:20px;
 }
-
 .footer img {
   width: 100px;
   height: 50px;
