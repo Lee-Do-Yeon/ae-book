@@ -90,29 +90,10 @@ def predict_star_point(review):
 input: title, words
 output: review, star point
 """
-def create_gpt_review(title:str, words: str, writer=None, char=None):
+def create_gpt_review(title:str, words: str, writer: str, length: int):
     
-    # message 구성
-    if writer != None and char != None:
-        
-        #default number of character value
-        char = max(100,int(char))
-            
-        m = f"너는 {writer}의 {title}이라는 책을 읽은 사람이야. 너에 대한 자기소개는 하지 말고 {words}를 키워드로 해서 서평을 {char}자 이내로 써줘"
-    
-    elif writer == None:
-        
-        #default number of character value
-        if char == None:
-            char = 100
-        else:
-            char = max(100,int(char))
-        
-        m = f"너는 {title}이라는 책을 읽은 사람이야. 너에 대한 자기소개는 하지 말고 {words}를 키워드로 해서 서평을 {char}자 이내로 써줘"
-    
-    elif char == None:
-        
-        m = f"너는 {writer}의 {title}이라는 책을 읽은 사람이야. 너에 대한 자기소개는 하지 말고 {words}를 키워드로 해서 서평을 100자 이내로 써줘"
+    # message 구성    
+    m = f"너는 {writer}의 {title}이라는 책을 읽은 사람이야. 너에 대한 자기소개는 하지 말고 {words}를 키워드로 해서 서평, 키워드라는 말을 쓰지 말고 서평을 {length}자 이내로 써줘"
     
     #chatgpt request
     completion = openai.ChatCompletion.create(

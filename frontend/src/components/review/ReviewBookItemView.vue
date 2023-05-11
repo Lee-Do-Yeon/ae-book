@@ -52,12 +52,12 @@
           <textarea v-show="isModify"
             id="reviewContent"
             class="item-modify"
-            rows="4"
+            rows="6"
             v-model="updateContent"
             ref="reviewContent"
             >
           </textarea>
-          <div v-show="isModify" class="limit">현재 {{ this.updateContent.length }} 자 입니다.</div>
+          <div v-show="isModify" class="limit">현재 {{ this.updateContent.length }} / 300 자 입니다.</div>
         </div>
       </div>
     </div>
@@ -96,18 +96,17 @@ export default {
   methods: {
     ...mapActions(reviewStore, ['modifyReviewAction', 'deleteReviewAction']),
     async checkValue () {
-      console.log('update : ' + this.updateContent)
       let err = true
       let msg = ''
 
       if (!this.updateContent) {
-        msg = '내용을 입력해주세요.'
+        msg = '리뷰 내용을 입력해주세요.'
         err = false
         this.$refs.reviewContent.focus()
       }
 
       if (this.updateContent.length > 300) {
-        msg = '리뷰 내용을 줄여주세요. \n' + '현재 입력된 글자는 ' + this.updateContent.length + '자 입니다.'
+        msg = '리뷰 입력은 300자 내로 가능합니다. \n' + '현재 입력된 글자는 ' + this.updateContent.length + '자 입니다.'
         err = false
         this.$refs.reviewContent.focus()
       }
@@ -133,16 +132,21 @@ export default {
         setTimeout(() => {
           this.truncateContent()
           this.isModify = false
+          this.isExpanded = false
         }, 400)
       }
     },
     modifyReview () {
       if (!this.isModify) {
         this.isModify = true
+        this.isExpanded = true
       }
     },
     cancelModify () {
       this.isModify = false
+      this.isExpanded = false
+      this.updateScore = this.review.score
+      this.updateContent = this.review.content
     },
     modifyScore (newScore) {
       this.updateScore = newScore
@@ -244,8 +248,8 @@ export default {
   margin-left: 5px;
 }
 .item-modify {
-  width: 637px;
-  margin-left: 15px;
+  width: 624px;
+  margin-left: 12px;
   margin-top: 3px;
   font-size: 1em;
   resize: none;

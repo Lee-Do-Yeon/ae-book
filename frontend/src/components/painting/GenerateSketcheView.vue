@@ -79,7 +79,7 @@ export default {
       if (sessionStorage.getItem('isLoginUser') === 'true') {
         this.savePainting(formData)
           .then(
-            alert('선화를 저장에 성공했습니다.')
+            alert('선화를 성공적으로 저장했습니다.')
           )
           .catch(error => {
             alert('선화 저장에 실패했습니다.')

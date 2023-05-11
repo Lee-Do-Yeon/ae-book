@@ -44,6 +44,8 @@ TTS_URL = "https://naveropenapi.apigw.ntruss.com/tts-premium/v1/tts"
 ADJECTIVE = ["아름다운","이해하기 쉬운","재미있는","슬픈","교훈을 주는","상상력을 자극하는",
              "감동을 주는","어린이가 좋아할 만한","사실적인"]
 VOICE = ["vara","vdain","nkyungtae","nminsang"]
+REVIEWLENGTH = [10,20,30,40,50,60,70,80,90,100]
+STORYLENGTH = [100,110,120,130,140,150]
 
 #api key
 load_dotenv()
@@ -69,7 +71,7 @@ async def say_hello(name: str):
     return {"message":f"Hello {name}"}
 
 """
-input: title, words
+input: title, words, writer
 output: review, star point
 """
 @app.post("/fast/reviews/gpt")
@@ -81,28 +83,10 @@ async def create_review(data:Dict[Any,Any]):
     title = data["title"]
     words = data["keyword"]
     writer = data["writer"]
-    char = data["char"]
+    length = np.random.choice(REVIEWLENGTH)
     
-    # message 구성
-    if writer != None and char != None:
-        
-        #default number of character value
-        char = max(100,int(char))
-
-        m = f"너는 {writer}의 {title}이라는 책을 읽은 사람이야. 너에 대한 자기소개는 하지 말고 {words}를 키워드로 해서 서평을 {char}자 이내로 써줘"
-    elif writer == None:
-        
-        #default number of character value
-        if char == None:
-            char = 100
-        else:
-            char = max(100,int(char))
-        
-        m = f"너는 {title}이라는 책을 읽은 사람이야. 너에 대한 자기소개는 하지 말고 {words}를 키워드로 해서 서평을 {char}자 이내로 써줘"
-    
-    elif char == None:
-        
-        m = f"너는 {writer}의 {title}이라는 책을 읽은 사람이야. 너에 대한 자기소개는 하지 말고 {words}를 키워드로 해서 서평을 100자 이내로 써줘"
+    # message 구성    
+    m = f"너는 {writer}의 {title}이라는 책을 읽은 사람이야. 너에 대한 자기소개는 하지 말고 {words}를 키워드로 해서 서평, 키워드라는 말을 쓰지 말고 서평을 {length}자 이내로 써줘"
     
     #chatgpt request
     completion = openai.ChatCompletion.create(
@@ -126,7 +110,7 @@ input:mp3 file(keyword), title
 output:review & point prediction
 """
 @app.post("/fast/reviews/sound")
-async def sound_to_review(audio: UploadFile = File(...), title: str = Form(...), writer: str = Form(default=None), char: str = Form(default=None)):
+async def sound_to_review(audio: UploadFile = File(...), title: str = Form(...), writer: str = Form(default=None)):
     
     #read mp3 file to byte string
     data = await audio.read()
@@ -143,8 +127,9 @@ async def sound_to_review(audio: UploadFile = File(...), title: str = Form(...),
     if(rescode == 200):
         
         words = json.loads(response.text)['text'] #stt result
+        length = np.random.choice(REVIEWLENGTH)
         
-        review,star = create_gpt_review(title,words,writer,char)
+        review,star = create_gpt_review(title,words,writer,length)
         
         return {"review":review,"star":star,"respond":1}
     else:
@@ -248,8 +233,10 @@ output: chatgpt story, sound
 @app.post("/fast/stories/gpt")
 async def create_story(text:Dict[Any,Any]):
     
+    length = np.random.choice(STORYLENGTH)
+    
     #chatgpt query
-    query = f"너는 동화작가야. 너에 대한 자기소개는 하지 말고 어린이를 위해서 {text['text']}로 {np.random.choice(ADJECTIVE)} 동화를 250자 이내로 만들어줘."
+    query = f"너는 동화작가야. 너에 대한 자기소개는 하지 말고 어린이를 위해서 {text['text']}로 {np.random.choice(ADJECTIVE)} 동화를 {length}자 이내로 만들어줘."
         
     #chatgpt request
     completion = openai.ChatCompletion.create(

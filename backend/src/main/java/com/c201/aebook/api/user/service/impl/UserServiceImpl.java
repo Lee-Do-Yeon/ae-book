@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. 사용자 탈퇴처리(카카오 아이디와 전화번호는 null로 변경, 닉네임은 '탈퇴한 사용자'로 변경, status는 0으로 변경)
-        user.invalidateUserEntity(null, null, "탈퇴한 사용자", 0);
+        // 2. 사용자 탈퇴처리(카카오 아이디와 전화번호는 null로 변경, 닉네임은 '탈퇴한 사용자'로 변경, status는 0으로 변경, 프로필 이미지는 기본 이미지로 변경)
+        user.invalidateUserEntity(null, null, "탈퇴한 사용자", 0, "https://aebookbucket.s3.ap-northeast-2.amazonaws.com/basic_profile.png");
     }
 }

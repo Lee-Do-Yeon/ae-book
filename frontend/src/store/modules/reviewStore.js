@@ -65,10 +65,8 @@ const reviewStore = {
   */
   actions: {
     async saveReviewAction ({ commit }, payload) {
-      console.log('saveReviewAction')
       await saveReview(payload)
         .then(({ data }) => {
-          console.log('Review Save Complete')
         })
         .catch((err) => {
           console.log(err)
@@ -78,17 +76,13 @@ const reviewStore = {
       await getMyReview(isbn)
         .then(({ data }) => {
           commit('SET_MY_REVIEW', data.result)
-          console.log('getMyReview')
-          console.log(data.result)
         }).catch((err) => {
           console.log(err)
         })
     },
     async modifyReviewAction ({ commit }, payload) {
-      console.log('modifyReviewAction')
       await modifyReview(payload)
         .then(({ data }) => {
-          console.log('Review Modify Complete')
         })
         .catch((err) => {
           console.log(err)
@@ -98,15 +92,12 @@ const reviewStore = {
       await deleteReview(reviewId)
         .then(({ data }) => {
           commit('RESET_MY_REVIEW')
-          console.log('Review Delete Complete')
         })
     },
     async getReviewMainListAction ({ commit }) {
       await getReviewMainList()
         .then(({ data }) => {
           commit('SET_REVIEW_MAIN_LIST', data.result)
-          console.log('REVIEW_MAIN_LIST')
-          console.log(data.result)
         }).catch((err) => {
           console.log(err)
         })
@@ -114,21 +105,15 @@ const reviewStore = {
     async getReviewBookListAction ({ commit }, request) {
       await getReviewBookList(request)
         .then(({ data }) => {
-          console.log('getReviewBookListAction')
-          console.log(data.result.content)
           commit('SET_REVIEW_BOOK_LIST', data.result.content)
           commit('SET_REVIEW_BOOK_PAGE_SETTING', data.result)
         }).catch((err) => {
           console.log(err)
         })
-      console.log('Complete')
     },
     async getReviewMyListAction ({ commit }, request) {
       await getReviewMyList(request)
         .then(({ data }) => {
-          console.log('getReviewMyListAction')
-          console.log(data.result)
-          console.log(data.result.content)
           commit('SET_REVIEW_MY_LIST', data.result.content)
           commit('SET_REVIEW_MY_PAGE_SETTING', data.result)
         })

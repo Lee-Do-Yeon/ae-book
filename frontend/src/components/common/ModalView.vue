@@ -1,6 +1,6 @@
 <template>
   <div class="modal-overlay">
-    <b-modal v-model="visible" size="lg" @hidden="onHidden" hide-footer>
+    <b-modal v-model="visible" size="xl" @hidden="onHidden" hide-footer>
       <slot></slot>
     </b-modal>
   </div>

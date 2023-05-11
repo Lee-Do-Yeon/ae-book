@@ -23,7 +23,6 @@ export default {
   },
   methods: {
     check (index) {
-      console.log(index)
       if (this.isModify) {
         this.starScore = index
       }

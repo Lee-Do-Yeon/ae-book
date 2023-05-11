@@ -1,65 +1,69 @@
 <template>
   <div>
     <div>
-    <b-form @reset="onReset" v-if="show">
-      <div class='line-1'>
-        <b-form-group
-          id="input-group-1"
-        >
-          <div>
-            <b-form-input
-              id="input-1"
-              v-model="form.keyword"
-              type="text"
-              placeholder="키워드를 입력하세요."
-              style="width: 300px; margin-right: 20px;"
-              ref="keywordInput"
-            ></b-form-input>
+      <div class='description'>
+        <p>방법 1. 키워드를 작성한다. 자동 작성 버튼을 누른다.</p>
+        <p class='p-bottom'>방법 2. 마이크 버튼을 누른다. 키워드를 나열하며 말한다.</p>
+        <p class='p-line'>마이크 버튼을 눌러서 녹음을 멈춘다.</p>
+      </div>
+      <b-form @reset="onReset" v-if="show">
+        <div class='line-1'>
+          <div class='line-2'>
+            <b-form-group
+              id="input-group-1"
+            >
+              <b-input-group class="mt-3">
+                <b-form-input
+                  id="input-1"
+                  class="input-line"
+                  v-model="form.keyword"
+                  type="text"
+                  placeholder="키워드를 입력하세요."
+                  ref="keywordInput"
+                ></b-form-input>
+                <b-input-group-append>
+                    <b-button v-if="isRecording===false" class='' type="button" @click="soundToKeyword"><img width="20px" height="20px" src="https://img.icons8.com/fluency-systems-filled/48/microphone.png" alt="microphone"/></b-button>
+                    <b-button v-else class='' type="button" @click="stopSoundToKeyword"><img width="20px" height="20px" src="https://img.icons8.com/doodle/48/bandicam.png" alt="bandicam"/></b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+              <b-form-group
+                id="input-group-2"
+                label-for="input-2"
+              >
+              </b-form-group>
+          </div>
+          <button id='auto-create' class='ae-btn btn-red' type="button" @click="createAIReview">자동 작성</button>
+
+        </div>
+        <hr>
+        <b-form-group id="input-group-3" label="리뷰내용" label-for="input-2">
+           <div class='score-container'>
+            <review-modify-score-view v-if="isModify" :score=this.form.score :isModify=this.isModify @modify-score="modifyScore" />
           </div>
         </b-form-group>
-        <button class='ae-btn ai-btn' type="button" @click="createAIReview">자동 작성</button>
-        <button v-if="isRecording===false" class='ae-btn ai-btn' type="button" @click="soundToKeyword">말하기</button>
-        <button v-else class='ae-btn ai-btn' type="button" @click="stopSoundToKeyword">멈추기</button>
-      </div>
-      <div class='line-2'>
-        <b-form-group
-          id="input-group-2"
-          label="리뷰 글자 수"
-          label-for="input-2"
-        >
-          <b-form-input
-            id="input-2"
-            v-model="form.char"
-            type="number"
-            placeholder="1 이상 100 이하의 숫자를 입력하세요."
-            min="1"
-            max="100"
-            style="width: 300px; margin-right: 12px;"
-          ></b-form-input>
-        </b-form-group>
-        <div class='score-container'>
-          <review-modify-score-view v-if="isModify" :score=this.form.score :isModify=this.isModify @modify-score="modifyScore" />
+        <div
+          v-if="isLoading"
+          :key = "repeatKey"
+          class="animated-text">
+          {{ loadingMessage }}
         </div>
-      </div>
-      <b-form-group id="input-group-3" label="Content" label-for="input-2">
         <b-form-textarea
+          v-else
           id="input-3"
           v-model="form.content"
           placeholder="내용을 300자 내로 입력해주세요."
-          rows="3"
+          rows="6"
           min="1"
           :max="150"
           ref="contentInput"
         ></b-form-textarea>
-      </b-form-group>
+        <div v-show="isModify" class="limit">현재 {{ this.form.content.length }} / 300 자 입니다.</div>
 
-      <b-button class='submit-btn b-btn' type="button" variant="primary" @click="onSubmit">등록</b-button>
-      <b-button class='reset-btn b-btn' type="reset" variant="danger">초기화</b-button>
-    </b-form>
-    <!-- <b-card class="mt-3" header="Form Data Result">
-      <pre class="m-0">{{ bookInfo }}</pre>
-    </b-card> -->
-  </div>
+        <b-button class='submit-btn b-btn' type="button" variant="primary" @click="onSubmit">등록</b-button>
+        <b-button class='reset-btn b-btn' type="reset" variant="danger">초기화</b-button>
+      </b-form>
+    </div>
   </div>
 </template>
 
@@ -83,7 +87,6 @@ export default {
         title: this.bookInfo.title,
         keyword: '',
         writer: this.bookInfo.writer,
-        char: null,
         isbn: this.bookInfo.isbn,
         content: '',
         score: 5
@@ -92,13 +95,24 @@ export default {
       isModify: true,
       audioArray: [],
       mediaRecorder: null,
-      isRecording: false
+      isRecording: false,
+      isLoading: false,
+      loadingMessage: 'AI가 글을 쓰고 있습니다...',
+      repeatKey: 0
     }
+  },
+  mounted () {
+    this.animateText()
   },
   computed: {
     ...mapState(bookStore, ['book'])
   },
   methods: {
+    animateText () {
+      setInterval(() => {
+        this.repeatKey += 1
+      }, 4000)
+    },
     soundToKeyword () {
       navigator.mediaDevices.getUserMedia({ audio: true })
         .then((stream) => {
@@ -111,6 +125,7 @@ export default {
         })
     },
     async stopSoundToKeyword () {
+      this.isLoading = true
       this.isRecording = false
       this.mediaRecorder.stop()
       this.mediaRecorder.onstop = (event) => {
@@ -123,9 +138,6 @@ export default {
         if (this.writer != null) {
           formData.append('writer', this.form.writer)
         }
-        if (this.char != null) {
-          formData.append('char', this.form.char)
-        }
 
         axios
           .post('/fast/reviews/sound', formData, {
@@ -134,9 +146,9 @@ export default {
             }
           })
           .then(result => {
-            console.log(result)
             this.form.content = result.data.review
             this.form.score = result.data.star
+            this.isLoading = false
           })
           .catch(err => {
             console.log(err)
@@ -149,18 +161,17 @@ export default {
         this.$refs.keywordInput.focus()
         return
       }
-
+      this.isLoading = true
       axios
         .post(`/fast/reviews/gpt`, {
           title: this.form.title,
           keyword: this.form.keyword,
-          writer: this.form.writer,
-          char: this.form.char
+          writer: this.form.writer
         })
         .then(result => {
-          console.log(result)
           this.form.content = result.data.review
           this.form.score = result.data.star
+          this.isLoading = false
         })
         .catch(err => {
           console.log(err)
@@ -169,13 +180,13 @@ export default {
     ...mapActions(reviewStore, ['saveReviewAction', 'getReviewBookListAction']),
     onSubmit (event) {
       if (!this.form.content) {
-        alert('리뷰 내용을 입력해주세요 ㅠㅅㅠ')
+        alert('리뷰 내용을 입력해주세요')
         this.$refs.contentInput.focus()
         return
       }
 
       if (this.form.content.length > 300) {
-        alert('리뷰 내용을 줄여주세요 ㅠㅅㅠ \n' + '현재 입력된 글자는 ' + this.form.content.length + '입니다 ^~^')
+        alert('리뷰 입력은 300자 내로 가능합니다. \n' + '현재 입력된 글자는 ' + this.form.content.length + '자 입니다.')
         this.$refs.contentInput.focus()
         return
       }
@@ -231,6 +242,30 @@ export default {
 </script>
 
 <style scoped>
+#input-group-3 {
+  margin-top: 30px;
+  margin-bottom: 0px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.limit {
+  text-align: right;
+}
+.input-line {
+  width: 287px;
+}
+.p-bottom {
+  margin-bottom: 0rem;
+}
+.p-line {
+  margin-left: 54px;
+}
+.description {
+  margin-left: 18px;
+  text-align: left;
+}
 .reset-btn {
   background-color: var(--ae-red);
 }
@@ -239,23 +274,31 @@ export default {
 }
 .line-1 {
   display: flex;
-}
-.line-2 {
-  display: flex;
+  margin-bottom: 20px;
 }
 .score-container {
-  margin: 36px 0px 0px 0px;
+  margin-left: auto;
+  margin-bottom: 5px;
 }
-.ai-btn {
+.btn-red {
   width: 120px;
-  height: 40px;
-  padding: 0px 5px;
+  height: 43px;
+  padding: 8px 5px;
   border-radius: 8px;
   border: 2px solid;
   font-weight: bold;
+  margin-top: 14px;
 }
 .b-btn {
   width: 90px;
   font-weight: bold;
+}
+.animated-text {
+  animation: fade-in-out-animation 4s linear;
+}
+
+@keyframes fade-in-out-animation {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
 }
 </style>

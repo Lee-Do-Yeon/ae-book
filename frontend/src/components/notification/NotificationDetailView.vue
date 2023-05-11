@@ -112,6 +112,11 @@ export default {
         return
       }
 
+      if (price > this.book.price) {
+        alert('도서의 최저가보다 적은 가격만 알림 신청이 가능합니다! 가격을 변경해주세요!')
+        return
+      }
+
       if (!isNaN(price)) {
         if (this.selected === 'D') {
           price = 0

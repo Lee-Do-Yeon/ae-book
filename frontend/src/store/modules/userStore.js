@@ -8,7 +8,7 @@ const userStore = {
     user: {},
     isValidToken: false
   },
-  getter: {
+  getters: {
     getUserInfo: function (state) {
       return state.user
     }
@@ -26,7 +26,6 @@ const userStore = {
     SET_USER_INFO: (state, user) => {
       state.isLogin = true
       state.user = user
-      console.log(state.user)
     }
   },
   actions: {
@@ -89,8 +88,6 @@ const userStore = {
       try {
         const data = await modifyUser(formdata)
         if (data.status === 200) {
-          console.log(data.data.result)
-
           const userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
 
           const user = {
@@ -98,11 +95,9 @@ const userStore = {
             nickname: data.data.result.nickname,
             profileUrl: data.data.result.profileUrl
           }
-          console.log(user)
           commit('SET_USER_INFO', user)
 
           const updatedUserInfo = Object.assign(userInfo, user)
-          console.log(updatedUserInfo)
           sessionStorage.setItem('userInfo', JSON.stringify(updatedUserInfo))
         } else {
           console.log('로그아웃 오류')
@@ -115,7 +110,6 @@ const userStore = {
       try {
         const data = await deleteUser()
         if (data.status === 200) {
-          console.log('사용자 탈퇴')
         } else {
           console.log('사용자 탈퇴 오류')
         }

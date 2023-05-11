@@ -1,12 +1,11 @@
 <template>
   <div>
-    <h1>ISBN 사진으로 검색</h1>
-    <div class="image-container">
-      <input type="file" @change="onFileChange" />
-      <div class="photo">
-        <img :src="imageUrl" v-if="imageUrl" />
-      </div>
-    </div>
+      <h1>ISBN 사진으로 검색</h1>
+      <label for="file-upload" class="photo">
+        <img :src="imageUrl" v-if="imageUrl" style="width:100%" />
+        <img v-else src="https://img.icons8.com/ios/100/camera--v4.png" alt="camera--v4" class="camera"/>
+      </label>
+      <input id="file-upload" type="file" @change="onFileChange" accept=".jpg, .png, .jpeg"/>
   </div>
 </template>
 
@@ -72,6 +71,7 @@ export default {
 </script>
 
 <style scoped>
+
 h1 {
   font-weight: 800;
   margin: 10px 0px;
@@ -82,9 +82,22 @@ h1 {
   margin: auto;
   border-radius: 10px;
   border: 1px solid var(--ae-navy);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.photo > img {
-  width: 100%;
+.ae-btn {
+  cursor: pointer;
 }
+
+#file-upload {
+  display: none;
+}
+
+.camera {
+  width: 100px;
+  margin: auto;
+}
+
 </style>

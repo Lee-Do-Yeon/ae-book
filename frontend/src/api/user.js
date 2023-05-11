@@ -12,7 +12,7 @@ const login = async (kakaoCode) => {
 }
 const logout = async () => {
   try {
-    console.log('로그아웃')
+    // console.log('로그아웃')
     const response = api.post(`/api/auth/logout`)
     return response
   } catch (error) {
@@ -23,7 +23,7 @@ const logout = async () => {
 
 const modifyUser = async (formData) => {
   try {
-    console.log('사용자 정보 수정')
+    // console.log('사용자 정보 수정')
     const response = api.patch(`/api/users/info`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
     return response
   } catch (error) {
@@ -34,7 +34,7 @@ const modifyUser = async (formData) => {
 
 const deleteUser = async () => {
   try {
-    console.log('사용자 탈퇴')
+    // console.log('사용자 탈퇴')
     const response = api.delete(`/api/users`)
     return response
   } catch (error) {

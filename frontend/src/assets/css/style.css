@@ -47,3 +47,17 @@ a:visited {
   text-decoration: none;
 }
 
+.user-img-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-img{
+  position: absolute;
+  width: 100%;
+}

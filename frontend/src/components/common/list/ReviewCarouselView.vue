@@ -28,11 +28,11 @@
             <div v-for="item in itemsChunk" :key="item.id" class="chunk w-34">
               <!-- 리뷰를 나타내는 내용 추가 -->
               <review-carousel-item-view :item="item" />
-              <button class="move-book btn-red">
-                <router-link :to="{ name: 'BookDetail', params: { isbn: item.isbn } }">
-                  책 보러가기 →
-                </router-link>
-              </button>
+              <router-link :to="{ name: 'BookDetail', params: { isbn: item.isbn } }">
+                <button class="move-book btn-red">
+                    책 보러가기 →
+                </button>
+              </router-link>
             </div>
           </div>
         </b-carousel-slide>

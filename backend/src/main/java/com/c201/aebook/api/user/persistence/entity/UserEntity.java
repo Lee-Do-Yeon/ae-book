@@ -47,11 +47,12 @@ public class UserEntity extends BaseEntity {
         this.profileUrl = profileUrl;
     }
 
-    public void invalidateUserEntity(Long kakaoId, String phone, String nickname, int status) {
+    public void invalidateUserEntity(Long kakaoId, String phone, String nickname, int status, String profileUrl) {
         this.kakaoId = kakaoId;
         this.phone = phone;
         this.nickname = nickname;
         this.status = status;
+        this.profileUrl = profileUrl;
     }
 
 }

@@ -58,6 +58,9 @@ export default {
     createAudio () {
       var blobURL = window.URL.createObjectURL(this.voiceBlob)
       this.audio = new Audio(blobURL)
+      this.audio.addEventListener('ended', () => {
+        this.stop = !this.stop
+      })
     },
     playAudio (stop) {
       if (stop) {

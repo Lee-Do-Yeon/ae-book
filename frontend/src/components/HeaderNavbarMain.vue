@@ -5,15 +5,15 @@
           <img src="../assets/images/main_logo.png" width="250" height="170">
         </router-link>
       </div>
-        <!-- 로그인 후, 보여주는 정보는 추후 다시 결정, 마이페이지는 임시 배치 -->
+        <!-- 로그인 후 -->
         <div class="after-login" style="margin-left: auto;" v-if=isLoginUser >
-          {{ user.userId }} | {{ user.nickname }}
-          <b-button size="sm" @click="logout" class="btn-white"><img src="https://img.icons8.com/material-rounded/24/null/person-male.png"/>로그아웃</b-button>
-          <router-link :to="{ name: 'MyPage' }" class="link"><b-button size="sm" class="btn-white">마이페이지</b-button></router-link>
+          {{ user.nickname }} 님
+          <router-link :to="{ name: 'MyPage' }" class="link"><b-button size="sm" class="btn-white"><img src="https://img.icons8.com/material-rounded/24/null/person-male.png"/><span class="to-my-page">마이페이지</span></b-button></router-link>
+          <b-button size="sm" @click="logout" class="btn-white"><img width="25" height="25" src="https://img.icons8.com/external-outline-kendis-lasman/64/external-logout-user-interface-outline-kendis-lasman.png"/><span class="to-my-page">&nbsp;로그아웃</span></b-button>
         </div>
         <!-- 로그인 전 -->
         <div class="before-login" style="margin-left: auto;" v-else>
-          <router-link :to="{ name: 'Login' }" class="link"><b-button size="sm" class="btn-white"><img src="https://img.icons8.com/material-rounded/24/null/person-male.png"/>로그인</b-button></router-link>
+          <router-link :to="{ name: 'Login' }" class="link"><b-button size="sm" class="btn-white"><img width="25" height="25" src="https://img.icons8.com/external-outline-kendis-lasman/25/external-login-user-interface-outline-kendis-lasman.png"/>&nbsp;로그인</b-button></router-link>
         </div>
     </div>
 </template>
@@ -71,5 +71,9 @@ export default {
 
 .after-login .before-login {
   position: absolute;
+}
+
+.to-my-page {
+  font-size: small;
 }
 </style>

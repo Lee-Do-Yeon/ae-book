@@ -40,19 +40,19 @@
                     </router-link>
                 </b-nav-item>
             </b-navbar-nav>
-            <!-- 로그인 후, 보여주는 정보는 추후 다시 결정, 마이페이지는 임시 배치 -->
+            <!-- 로그인 후 -->
             <b-navbar-nav class="ml-auto" v-if=isLoginUser>
                     <b-nav-form>
-                        {{ user.userId }} | {{ user.nickname }}
-                        <b-button size="sm" @click="logout" class="btn-white"><img src="https://img.icons8.com/material-rounded/24/null/person-male.png"/>로그아웃</b-button>
-                        <router-link :to="{ name: 'MyInfo' }" class="link">
-                          <b-button size="sm" class="btn-white"><span>마이페이지</span></b-button></router-link>
+                        {{ user.nickname }} 님
+                        <router-link :to="{ name: 'MyPage' }" class="link">
+                          <b-button size="sm" class="btn-white"><img src="https://img.icons8.com/material-rounded/24/null/person-male.png"/><span class="to-my-page">마이페이지</span></b-button></router-link>
+                          <b-button size="sm" @click="logout" class="btn-white"><img width="25" height="25" src="https://img.icons8.com/external-outline-kendis-lasman/64/external-logout-user-interface-outline-kendis-lasman.png"/><span class="to-my-page">&nbsp;로그아웃</span></b-button>
                     </b-nav-form>
             </b-navbar-nav>
             <!-- 로그인 전 -->
             <b-navbar-nav class="ml-auto" v-else>
                 <b-nav-form>
-                    <router-link :to="{ name: 'Login' }" class="link"><b-button size="sm" class="btn-white"><img src="https://img.icons8.com/material-rounded/24/null/person-male.png"/>로그인</b-button></router-link>
+                    <router-link :to="{ name: 'Login' }" class="link"><b-button size="sm" class="btn-white"><img width="25" height="25" src="https://img.icons8.com/external-outline-kendis-lasman/25/external-login-user-interface-outline-kendis-lasman.png"/>&nbsp;로그인</b-button></router-link>
                 </b-nav-form>
             </b-navbar-nav>
             </b-collapse>
@@ -134,6 +134,10 @@ export default {
 
 .nav-menu.fourth {
   background-color: var(--menu-green);
+}
+
+.to-my-page {
+  font-size: small;
 }
 
 </style>
