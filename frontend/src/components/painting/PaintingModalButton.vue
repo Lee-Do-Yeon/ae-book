@@ -1,5 +1,5 @@
 <template #modal-footer>
-  <div class="modal-footer">
+  <div v-if="painting !== null" class="modal-footer">
     <button class="ae-btn btn-red" @click="downloadPainting(painting.id)">다운로드</button>
     <button v-if="painting.type === 'LINE'" class="ae-btn btn-red" @click="coloring">색칠하기</button>
     <button class="ae-btn btn-navy" @click="clickDelete(painting.id)">삭제</button>

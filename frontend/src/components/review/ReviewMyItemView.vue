@@ -6,7 +6,7 @@
           <div>
             <div class="book-title">
               <router-link class='router-font' :to="{ name: 'BookDetail', params: { isbn: review.isbn } }">
-            {{ review.title | removeTitlePrefix }}
+            {{ review.title | removeTitlePrefix | shortText(17., '...')}}
               </router-link>
               <div class="item-updated-at">
               {{ review.updatedAt.slice(0, 10) }}

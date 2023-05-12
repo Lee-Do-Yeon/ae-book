@@ -36,17 +36,49 @@ export default new Router({
         {
           path: 'keyword',
           name: 'StoryKeywordInput',
-          component: () => import('@/components/story/StoryKeywordInputView')
+          component: () => import('@/components/story/StoryKeywordInputView'),
+          beforeEnter: (to, from, next) => {
+            const isLoggedIn = sessionStorage.getItem('isLoginUser')
+            if (isLoggedIn) {
+              next()
+            } else {
+              alert('로그인이 필요한 페이지입니다.')
+              next('/story/list')
+            }
+          }
         },
         {
           path: 'board',
           name: 'StoryPaintingBoard',
-          component: () => import('@/components/story/StoryPaintingBoardView')
+          component: () => import('@/components/story/StoryPaintingBoardView'),
+          beforeEnter: (to, from, next) => {
+            const isLoggedIn = sessionStorage.getItem('isLoginUser')
+            if (isLoggedIn) {
+              next()
+            } else {
+              alert('로그인이 필요한 페이지입니다.')
+              next('/story/list')
+            }
+            if (from.name === 'StoryResult') {
+              next({ name: 'StoryKeywordInput' })
+            } else {
+              next()
+            }
+          }
         },
         {
           path: 'result',
           name: 'StoryResult',
-          component: () => import('@/components/story/StoryResultView')
+          component: () => import('@/components/story/StoryResultView'),
+          beforeEnter: (to, from, next) => {
+            const isLoggedIn = sessionStorage.getItem('isLoginUser')
+            if (isLoggedIn) {
+              next()
+            } else {
+              alert('로그인이 필요한 페이지입니다.')
+              next('/story/list')
+            }
+          }
         }
       ]
     },

@@ -1,18 +1,23 @@
 <template>
   <div>
-    <div class="subject-line">
-      <div class="subject">작성한 서평</div>
+      <h1 class="subject">작성한 리뷰</h1>
       <div class="gray-bar"></div>
-    </div>
-    <div
-      class="list-group-item"
-      v-for="review in reviewMyList"
-      :key="review.id"
-    >
-      <review-my-item-view :review=review :page=request.page @paging="paging"></review-my-item-view>
-    </div>
-    <div class="pagination-container">
-      <pagination :pageSetting="reviewMyPageSetting" @paging="paging"></pagination>
+    <div class="review-container">
+      <div v-show="reviewMyList.length == 0">
+        <p>등록된 리뷰가 없습니다</p>
+      </div>
+      <div v-show="reviewMyList.length > 0">
+        <div
+          class="list-group-item"
+          v-for="review in reviewMyList"
+          :key="review.id"
+        >
+          <review-my-item-view :review=review :page=request.page @paging="paging"></review-my-item-view>
+        </div>
+        <div class="pagination-container">
+          <pagination :pageSetting="reviewMyPageSetting" @paging="paging"></pagination>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -63,34 +68,27 @@ export default {
 </script>
 
 <style scoped>
+.review-container {
+  margin: auto;
+  margin-top: 30px;
+}
+p{
+  font-size: 25px;
+  margin-left: 30px;
+}
 .list-group-item {
   background: none;
   border: none;
   display: flex;
-  justify-content: left;
+  justify-content: center;
   padding: 3px;
-}
-.pagination-container {
-  display:flex;
-  justify-content: left;
-  margin-left: 230px
 }
 .subject{
   text-align: left;
   font-size: 24px;
   font-weight: 800;
-  margin-right: 15px;
-}
-.subject-line{
-  width: 1000px;
-  justify-content: left;
-  align-items: center;
 }
 .gray-bar {
-  margin-top: 3px;
-  margin-bottom: 20px;
-  height: 2px;
-  background-color: var(--stroke-gray);
-  width: 70%;
+  height:2px; background-color: #E0E0E0;
 }
 </style>

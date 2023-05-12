@@ -1,9 +1,11 @@
 <template>
 <div>
-  <input class="input-box" type="text" v-model="painting.title">
-  <button class="ae-btn btn-red" @click="updatePaintingTitle({paintingId: painting.id, title: {title:painting.title}})">수정</button>
-  <br>
-  <img class="painting-img" v-bind:src="painting.fileUrl">
+  <div v-if="painting !== null">
+    <input class="input-box" type="text" v-model="painting.title">
+    <button type="button" class="ae-btn btn-red" @click="onClickUpdate">수정</button>
+    <br>
+    <img class="painting-img" v-bind:src="painting.fileUrl">
+  </div>
 </div>
 </template>
 
@@ -13,16 +15,15 @@ const paintingStore = 'paintingStore'
 
 export default {
   name: 'PaintingDetailView',
-  data () {
-    return {
-
-    }
-  },
   computed: {
     ...mapState(paintingStore, ['painting'])
   },
   methods: {
-    ...mapActions('paintingStore', ['updatePaintingTitle'])
+    ...mapActions('paintingStore', ['updatePaintingTitle']),
+    onClickUpdate () {
+      this.updatePaintingTitle({paintingId: this.painting.id, title: {title: this.painting.title}})
+      this.$emit('close')
+    }
   }
 }
 </script>

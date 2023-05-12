@@ -1,14 +1,13 @@
 <template>
   <div>
-    <h1>동화책 목록</h1>
-    <router-link to="/story/keyword"><button class="ae-btn btn-red">동화 만들러 가기</button></router-link>
+    <div class="title-container">
+      <h1 class="h1-title">동화책 목록</h1>
+      <router-link to="/story/keyword"><button class="ae-btn btn-red">동화 만들러 가기</button></router-link>
+    </div>
     <ModalView :modalShow="isModalVisible" @close-modal="closeModal">
       <StoryDetailView />
     </ModalView>
-    <div v-if="isLoginUser === false" class="story-container">
-      로그인한 유저만 확인 가능합니다.
-    </div>
-    <div v-else class="story-container">
+    <div class="story-container">
       <div v-for="story in storyList" :key="story.storyId" @click="showModal(story.storyId)">
         <list-item
         :item="story"
@@ -89,14 +88,16 @@ export default {
 .pagination-container {
   display:flex;
   justify-content: center;
+  width: 800px;
+  margin: auto;
 }
 
 .disabled{
   background-color: lightgray;
 }
-
-h1 {
-  font-weight: 800;
-  margin: 10px 0px;
+.title-contanier {
+  width: 800px;
+  margin: auto;
 }
+
 </style>

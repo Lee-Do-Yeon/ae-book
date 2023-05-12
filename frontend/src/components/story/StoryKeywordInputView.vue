@@ -1,8 +1,15 @@
 <template>
   <div>
-    <h1>동화 키워드 입력</h1>
-    <input type="text" v-model="inputValue" />
-    <button @click="sendInputValue" class="ae-btn btn-red">전송</button>
+    <div id="cardGroup">
+      <div style="margin-top:100px; margin-bottom: 30px; margin-left: -30px;">
+        <h2>동화 키워드 입력</h2>
+      </div>
+      <div id="inputGroup">
+        <input type="text" v-model="inputValue" />
+        <button @click="sendInputValue" class="ae-btn btn-red">전송</button>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -22,8 +29,17 @@ export default {
 }
 </script>
 <style scoped>
-h1 {
+h2 {
   font-weight: 800;
-  margin: 10px 0px;
 }
+#inputGroup input{
+  width: 400px;
+  height: 40px;
+}
+
+#cardGroup{
+  width:700px; height: 400px; margin-left: 400px; margin-top:100px;
+  padding-top:20px;
+}
+
 </style>

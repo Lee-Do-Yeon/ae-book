@@ -1,4 +1,4 @@
-import { searchStory, registerStory } from '@/api/story'
+import { searchStory, registerStory, updateStoryTitle, deleteStory } from '@/api/story'
 
 const storyStore = {
   namespaced: true,
@@ -26,6 +26,14 @@ const storyStore = {
     },
     SET_STORY: (state, data) => {
       state.story = data
+    },
+    UPDATE_STORY: (state, data) => {
+      const index = state.storyList.findIndex(item => item.storyId === data.storyId)
+      state.storyList[index].title = data.title
+    },
+    DELETE_STORY: (state, data) => {
+      const index = state.storyList.findIndex(item => item.storyId === data)
+      state.storyList.splice(index, 1)
     }
   },
   getters: {
@@ -52,6 +60,26 @@ const storyStore = {
         })
         .catch(error => {
           console.error(error)
+        })
+    },
+    async updateTitleOfStory ({ commit }, payload) {
+      await updateStoryTitle(payload)
+        .then(({data}) => {
+          alert('성공적으로 수정했습니다.')
+          commit('UPDATE_STORY', data.result)
+        })
+        .catch(error => {
+          alert('수정에 실패했습니다. ' + error)
+        })
+    },
+    async deleteStoryById ({ commit }, storyId) {
+      await deleteStory(storyId)
+        .then(({data}) => {
+          alert('성공적으로 삭제했습니다.')
+          commit('DELETE_STORY', data.result)
+        })
+        .catch(error => {
+          alert('삭제 실패했습니다.' + error)
         })
     }
   }

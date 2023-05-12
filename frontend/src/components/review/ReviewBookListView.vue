@@ -1,15 +1,21 @@
 <template>
   <div>
-    <!-- TODO: 정렬 -->
-    <div
-      class="list-group-item"
-      v-for="review in reviewBookList"
-      :key="review.id"
-    >
-      <review-book-item-view :review=review :page=request.page @paging="paging"></review-book-item-view>
-    </div>
-    <div class="pagination-container">
-      <pagination :pageSetting="reviewBookPageSetting" @paging="paging"></pagination>
+    <div class="review-container">
+      <div v-show="reviewBookList.length == 0">
+        <p class="p-font">등록된 리뷰가 없습니다</p>
+      </div>
+      <div v-show="reviewBookList.length > 0">
+        <div
+          class="list-group-item"
+          v-for="review in reviewBookList"
+          :key="review.id"
+        >
+          <review-book-item-view :review=review :page=request.page @paging="paging"></review-book-item-view>
+        </div>
+        <div class="pagination-container">
+          <pagination :pageSetting="reviewBookPageSetting" @paging="paging"></pagination>
+        </div>
+      </div>
     </div>
   </div>
 </template>

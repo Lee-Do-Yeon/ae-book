@@ -131,9 +131,9 @@ async def sound_to_review(audio: UploadFile = File(...), title: str = Form(...),
         
         review,star = create_gpt_review(title,words,writer,length)
         
-        return {"review":review,"star":star,"respond":1}
+        return {"words": words, "review":review,"star":star,"respond":1}
     else:
-        return {"review":'', "star":0, "respond":0}
+        return {"words": words, "review":'', "star":0, "respond":0}
     
     
 

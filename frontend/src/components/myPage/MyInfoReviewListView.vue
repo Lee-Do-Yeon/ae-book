@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div >
       <review-my-list-view></review-my-list-view>
     </div>
   </div>
@@ -51,4 +51,5 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

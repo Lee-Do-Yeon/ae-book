@@ -3,7 +3,7 @@
     <div>
       <div class="item-group-1">
         <div class="item-user-info">
-          <img class="item-user-img" :src=review.reviewerImg />
+          <img class="user-img-box" :src=review.reviewerImg />
           <div>
             <div class="user-nickname">
             {{ review.reviewerNickname }}
@@ -214,9 +214,9 @@ export default {
 .more-content {
   border: none;
 }
-.item-user-img {
+.user-img-box {
   display: flex;
-  width: 50;
+  width: 50px;
   height: 50px;
   border-radius: 30px;
   margin-right: 20px;

@@ -1,20 +1,29 @@
 <template>
   <div>
-    <h2>나의 동화 목록</h2>
+    <h1 class="subject">동화책</h1>
+    <div style="height:2px; background-color: #E0E0E0;"></div>
     <ModalView :modalShow="isModalVisible" @close-modal="closeModal">
       <StoryDetailView @close="closeModal"/>
     </ModalView>
-    <div class="story-container">
-      <div v-for="story in storyList" :key="story.storyId" @click="showModal(story.storyId)">
-        <list-item
-        :item="story"
-      >
-    </list-item>
+
+    <div v-if="storyList.length !== 0">
+      <div class="story-container">
+          <div v-for="story in storyList" :key="story.storyId" @click="showModal(story.storyId)">
+            <list-item
+            :item="story"
+          >
+        </list-item>
+          </div>
+
+      </div>
+      <div class="pagination-container">
+        <pagination :pageSetting="storyPageSetting" @paging="paging"></pagination>
       </div>
     </div>
-    <div class="pagination-container">
-      <pagination :pageSetting="storyPageSetting" @paging="paging"></pagination>
+    <div v-else>
+      <p class="no-content">동화가 없습니다</p>
     </div>
+
   </div>
 </template>
 
@@ -84,4 +93,16 @@ export default {
   display:flex;
   justify-content: center;
 }
+
+.subject{
+  text-align: left;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.no-content{
+  font-size: 25px;
+  margin-top: 30px;
+}
+
 </style>

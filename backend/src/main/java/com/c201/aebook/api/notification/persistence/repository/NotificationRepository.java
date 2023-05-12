@@ -28,13 +28,4 @@ public interface NotificationRepository extends JpaRepository<NotificationEntity
 
     @Query("SELECT count(n.id) > 0 FROM NotificationEntity n WHERE n.user.id = :userId AND n.book.id = :bookId")
     boolean existsByBookId(Long bookId, Long userId);
-
-    /* 알림톡 테스트에 사용*/
-    @Query("SELECT n FROM NotificationEntity n JOIN FETCH n.user u WHERE n.book.id = :bookId")
-    List<NotificationEntity> findByBookId(@Param("bookId") Long bookId);
-
-    /* 알림톡 테스트에 사용*/
-    @Query("SELECT n FROM NotificationEntity n JOIN FETCH n.user u " +
-            "WHERE n.book.id = :bookId AND n.notificationType = :notificationType")
-    List<NotificationEntity> findByBookIdAndNotificationType(@Param("bookId") Long bookId, @Param("notificationType") String notificationType);
 }

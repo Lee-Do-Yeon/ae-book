@@ -49,6 +49,14 @@ const paintingStore = {
     },
     ADD_PAINTING: (state, data) => {
       state.paintingList.push(data)
+    },
+    DELETE_PAINTING: (state, data) => {
+      const index = state.paintingList.findIndex(item => item.id === data)
+      state.paintingList.splice(index, 1)
+    },
+    UPDATE_PAINTING: (state, data) => {
+      const index = state.paintingList.findIndex(item => item.id === data.id)
+      state.paintingList[index].title = data.title
     }
   },
   actions: {
@@ -119,6 +127,7 @@ const paintingStore = {
         .then(({ data }) => {
           alert('그림을 성공적으로 삭제했습니다.')
           commit('SET_PAINTING', null)
+          commit('DELETE_PAINTING', data.result)
         })
         .catch(error => {
           alert('그림 삭제에 실패했습니다.' + error)
@@ -129,6 +138,7 @@ const paintingStore = {
         .then(({ data }) => {
           alert('그림 제목을 성공적으로 수정했습니다.')
           commit('SET_PAINTING', data.result)
+          commit('UPDATE_PAINTING', data.result)
         })
         .catch(error => {
           alert('그림 제목을 수정에 실패했습니다.' + error)

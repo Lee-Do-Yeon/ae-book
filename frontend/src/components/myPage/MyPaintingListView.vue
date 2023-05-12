@@ -6,8 +6,9 @@
     <painting-detail-view/>
     <painting-modal-button @close="closeModal"></painting-modal-button>
     </ModalView>
+    <div v-if="paintingList.length !== 0">
     <div class="painting-container">
-      <div v-for="painting in paintingList" :key="painting.id" @click="showModal(painting.id)">
+      <div v-for="(painting, index) in paintingList" :key="index" @click="showModal(painting.id)">
         <list-item
             :item="painting"
           >
@@ -17,6 +18,10 @@
     <div class="pagination-container">
       <pagination :pageSetting="paintingPageSetting" @paging="paging"></pagination>
     </div>
+  </div>
+  <div v-else>
+    <p class="no-content">그림이 없습니다</p>
+  </div>
 </div>
 
 </template>
@@ -91,5 +96,10 @@ export default {
 .pagination-container {
   display:flex;
   justify-content: center;
+}
+
+.no-content{
+  font-size: 25px;
+  margin-top: 30px;
 }
 </style>

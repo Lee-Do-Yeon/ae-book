@@ -1,11 +1,15 @@
 <template>
   <div>
-    <label class="title">제목 : </label>
-    <input type="text" v-model="title">
-    <button @click="playAudio(stop)" class="ae-btn btn-red">오디오재생</button>
-    <button @click="stopAudio(stop)" class="ae-btn btn-red">오디오멈춤</button>
-    <button @click="restartAudio()" class="ae-btn btn-red"> 오디오 처음부터 듣기 </button>
-    <button @click="onSaveClick" class="ae-btn btn-red">동화 저장</button>
+
+    <b-input-group v-if="story" style="margin-left:500px; width:500px; text-align: center; margin-top:20px; margin-bottom:30px;">
+      <template #prepend>
+        <b-input-group-text>제목</b-input-group-text>
+      </template>
+      <b-form-input v-model="title" placeholder="Enter your Title"></b-form-input>
+      <template #append>
+        <b-button @click="onSaveClick" variant="success" size="sm" >동화 저장</b-button>
+      </template>
+    </b-input-group>
     <div class="container">
       <div class="container-left">
         <canvas id="canvas"
@@ -15,7 +19,12 @@
         ></canvas>
       </div>
       <div class="container-right">
-        {{ story }}
+        <div id="scrollStory"><p>{{ story }}</p></div>
+        <div id="buttonGroup" >
+          <b-button @click="playAudio(stop)" size="sm" variant="link"><img src="https://img.icons8.com/fluency-systems-filled/48/play.png" width="48" height="48"  alt="play"/></b-button>
+          <b-button @click="stopAudio(stop)" size="sm" variant="link"><img src="https://img.icons8.com/ios-glyphs/60/stop.png" width="60" height="60"  alt="stop"/></b-button>
+          <b-button @click="restartAudio()" size="sm" variant="link"><img  src="https://img.icons8.com/glyph-neue/64/restart--v1.png" width="60" height="60" alt="restart--v1"/></b-button>
+        </div>
       </div>
 
     </div>
@@ -42,6 +51,15 @@ export default {
     this.painting = this.$route.params.painting
     this.story = this.$route.params.story
     this.voiceBlob = this.$route.params.voiceBlob
+  },
+  beforeRouteLeave (to, from, next) {
+    // 오디오 요소를 찾아 재생을 멈춥니다.
+    if (this.audio) {
+      this.audio.pause()
+      this.audio.currentTime = 0
+    }
+
+    next()
   },
   mounted () {
     this.canvas = this.$refs.canvas
@@ -142,26 +160,52 @@ export default {
 }
 
 .container-left {
-  width: 60%;
-  margin-right: 30px;
+  width: 50%;
+  margin-right: 50px;
 }
 
 .container-right {
-  width: 40%;
-  display: flex;
+  width: 50%;
+  height: 400px;
   flex-direction: column;
   justify-content: space-evenly;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0px 1px 10px 0.1px rgba(0, 0, 0, 0.3);
+}
+
+#scrollStory{
+  overflow-y: scroll;
+  white-space: pre-wrap;
+  display:block;
+  height: 100%;
+
 }
 
 #canvas {
     border-radius: 15px;
     box-shadow: 0px 1px 10px 0.1px rgba(0, 0, 0, 0.3);
     float: left;
+    margin-bottom:20px;
+
 }
 
 .title {
   font-size: 35px;
   font-weight: 800;
+}
+
+p{
+  font-size: 25px;
+  line-height: 2;
+  letter-spacing: 2;
+}
+
+#buttonGroup{
+  margin-top: 30px;
+  border-radius: 15px;
+  box-shadow: 0px 1px 10px 0.1px rgba(0, 0, 0, 0.3);
+  background: white;
 }
 
 </style>

@@ -28,8 +28,8 @@
 </template>
 
 <script>
-import { searchDetailStory, updateStoryTitle } from '@/api/story'
-import { mapGetters } from 'vuex'
+import { searchDetailStory } from '@/api/story'
+import { mapActions, mapGetters } from 'vuex'
 import StoryModalButton from '@/components/story/StoryModalButton'
 const storyStore = 'storyStore'
 
@@ -62,6 +62,7 @@ export default {
       })
   },
   methods: {
+    ...mapActions(storyStore, ['updateTitleOfStory']),
     closeModal () {
       this.audio.pause()
       this.$emit('close')
@@ -69,19 +70,12 @@ export default {
     updateTitle () {
       this.storyId = this.getStoryId
       this.request = {
-        'title': this.story.title
+        'title': {'title': this.story.title},
+        'storyId': this.storyId
       }
-      updateStoryTitle(this.storyId, this.request)
-        .then(response => {
-          if (response.data.resultCode === 200) {
-            alert('정상적으로 수정했습니다.')
-            this.closeModal()
-          } else {
-            alert('정상적으로 수정하지 못했습니다.')
-          }
-        }).catch(error => {
-          alert('정상적으로 수정하지 못했습니다. ' + error)
-        })
+
+      this.updateTitleOfStory(this.request)
+      this.closeModal()
     },
     playAudio (stop) {
       if (stop) {

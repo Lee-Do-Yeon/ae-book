@@ -135,7 +135,7 @@ export default {
         formData.append('audio', blob, 'recoding.mp3')
         formData.append('title', this.form.title)
 
-        if (this.writer != null) {
+        if (this.form.writer != null) {
           formData.append('writer', this.form.writer)
         }
 
@@ -146,6 +146,7 @@ export default {
             }
           })
           .then(result => {
+            this.form.keyword = result.data.words
             this.form.content = result.data.review
             this.form.score = result.data.star
             this.isLoading = false

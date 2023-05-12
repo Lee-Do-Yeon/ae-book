@@ -4,11 +4,11 @@
         <input  @blur="clickOutsideAutoKeyword" v-model="keyword" placeholder="검색어를 입력하세요" @keyup.enter="onClickSearch"  @input="autoComplete" class="search-input">
         <button @click="onClickSearch" class="ae-btn btn-red">검색</button>
         <ul class="autocomplete" v-if="keyword !== ''">
-          <li v-for="keyword in autoCompleteList" :key="keyword" @mousedown="clickKeyword(keyword)">{{ keyword | removeTitlePrefix }}</li>
+          <li v-for="(keyword, index) in autoCompleteList" :key="index" @mousedown="clickKeyword(keyword)">{{ keyword | removeTitlePrefix }}</li>
         </ul>
     </div>
     <div class="content-container">
-      <div class="left">
+      <div class="search-option-container">
         <div class="search-option">
           <div class="search-option-title">검색옵션</div>
           <div style="height:1px; background-color: white;"></div>
@@ -17,24 +17,25 @@
           <div><input type="checkbox" v-model="searchTargets" value="PUBLISHER">출판사</div>
         </div>
       </div>
-      <div class="right">
-        <div v-if="(totalSearchCount === 0) || !clickSearch" class="no-search">
-        검색어를 입력하세요.
-      </div>
+      <div class="search-result-container">
+        <div v-if="searchKeyword === ''" class="no-search">
+          검색어를 입력하세요.
+        </div>
         <div v-else>
           <div class="search-result">
             '<span style="color:var(--ae-red); font-weight: 700;">{{ searchKeyword }}</span>' 검색 결과 전체 <span style="font-size:30px">{{totalSearchCount | pricePoint}}</span>건
           </div>
           <div class="bar"></div>
-          <div class="no-search" v-if="totalSearchCount === 0">'<span style="color:var(--ae-red)">{{ searchKeyword }}</span>' 검색 결과를 찾을 수 없습니다.</div>
-          <div v-if="totalSearchCount === 0">입력한 검색어의 철자 또는 띄어쓰기가 정확한지 다시 한번 확인해 주세요.<br>
-검색어의 단어 수를 줄이거나, 보다 일반적인 검색어를 사용하여 검색해 보세요.</div>
+          <div v-if="totalSearchCount === 0">
+            <div class="no-search">'<span style="color:var(--ae-red)">{{ searchKeyword }}</span>' 검색 결과를 찾을 수 없습니다.</div>
+            <div>입력한 검색어의 철자 또는 띄어쓰기가 정확한지 다시 한번 확인해 주세요.<br>검색어의 단어 수를 줄이거나, 보다 일반적인 검색어를 사용하여 검색해 보세요.</div>
+          </div>
           <div>
             <book-search-item v-for="book in bookList" :key="book.isbn" :book="book"></book-search-item>
           </div>
-        <div class="pagination-container" v-if="totalSearchCount !== 0">
-          <pagination :pageSetting="bookPageSetting" @paging="paging"></pagination>
-        </div>
+          <div class="pagination-container" v-if="totalSearchCount !== 0">
+            <pagination :pageSetting="bookPageSetting" @paging="paging"></pagination>
+          </div>
       </div>
 
       </div>
@@ -55,22 +56,17 @@ export default {
   data () {
     return {
       keyword: '', // 입력중인 키워드
-      searchKeyword: '', // 검색된 키워드
       searchTargets: ['TITLE', 'AUTHOR', 'PUBLISHER'],
       request: null,
-      autoCompleteList: [],
-      clickSearch: false
+      autoCompleteList: []
     }
   },
-  mounted () {
-    this.RESET_BOOK_SEARCH()
-  },
   computed: {
-    ...mapState(bookStore, ['bookList', 'bookPageSetting', 'totalSearchCount']),
+    ...mapState(bookStore, ['bookList', 'bookPageSetting', 'totalSearchCount', 'searchKeyword']),
     ...mapGetters(bookStore, ['getBookList'])
   },
   methods: {
-    ...mapMutations(bookStore, ['RESET_BOOK_SEARCH']),
+    ...mapMutations(bookStore, ['RESET_BOOK_SEARCH', 'SET_SEARCH_KEYWORD']),
     ...mapActions(bookStore, ['getSearchList']),
     onClickSearch () {
       // 검색어의 양끝 공백 제거
@@ -79,7 +75,7 @@ export default {
       // 공백 검색이라면 검색 결과 출력 X.
       if (this.keyword === '') {
         this.RESET_BOOK_SEARCH()
-        this.searchKeyword = ''
+        this.SET_SEARCH_KEYWORD('')
         return
       }
 
@@ -94,13 +90,11 @@ export default {
       // 특수문자 인코딩
       const encodedChar = encodeURIComponent(this.keyword)
 
-      this.clickSearch = true
-
       this.request = {
         keyword: encodedChar,
         searchTargets: this.searchTargets
       }
-      this.searchKeyword = this.keyword
+      this.SET_SEARCH_KEYWORD(this.keyword)
       this.getSearchList(this.request)
     },
     paging (page) {
@@ -143,12 +137,12 @@ export default {
   margin-top: 60px;
 }
 
-.left {
+.search-option-container {
   width: 20%;
   margin-right: 30px;
 }
 
-.right {
+.search-result-container {
   width: 80%;
   display: flex;
   flex-direction: column;

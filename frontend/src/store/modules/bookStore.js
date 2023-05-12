@@ -7,7 +7,8 @@ const bookStore = {
     book: null,
     bookList: [],
     bookPageSetting: null,
-    totalSearchCount: 0
+    totalSearchCount: 0,
+    searchKeyword: ''
   },
   /*
   Gettes: state의 변수들을 get하는역할을 한다.
@@ -36,6 +37,7 @@ const bookStore = {
       state.bookList = []
       state.bookPageSetting = null
       state.totalSearchCount = 0
+      state.searchKeyword = ''
     },
     SET_PAGE_SETTING: (state, data) => {
       const { pageable, last, first, totalPages, size, totalElements, numberOfElements, empty } = data
@@ -43,6 +45,9 @@ const bookStore = {
     },
     SET_COUNT: (state, data) => {
       state.totalSearchCount = data
+    },
+    SET_SEARCH_KEYWORD: (state, data) => {
+      state.searchKeyword = data
     }
   },
   /*

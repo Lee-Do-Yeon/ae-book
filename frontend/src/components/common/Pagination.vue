@@ -1,10 +1,11 @@
 <template>
-    <div>
-    <div class="page-list">
+    <div class="pagination-box">
+    <div class="page-list" v-if="pageSetting !== null">
       <ul>
         <li
           v-if="pageSetting.first"
           class="pagebtn pre disabled"
+          style="margin-left:0px"
       >◀</li>
         <li
           v-else
@@ -38,7 +39,11 @@
 <script>
 export default {
   name: 'Pagination',
-  props: ['pageSetting'],
+  props: {
+    pageSetting: {
+      required: true
+    }
+  },
   computed: {
     computedPages () {
       const currentPage = this.pageSetting.pageable.pageNumber + 1
@@ -65,4 +70,15 @@ export default {
 </script>
 
 <style scoped>
+
+ul {
+  padding: 0px;
+}
+
+.pagination-box{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
 </style>

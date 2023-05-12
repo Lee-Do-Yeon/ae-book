@@ -22,6 +22,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
   // these devServer options should be customized in /config/index.js
   devServer: {
+    host: '0.0.0.0',
+    port: 3000,
+    public: 'http://0.0.0.0:443',
+    disableHostCheck: true,
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [

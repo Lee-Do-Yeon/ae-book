@@ -11,7 +11,7 @@ const searchDetailStory = storyId => axios.get(`/api/stories/${storyId}`)
 const deleteStory = (storyId) => api.delete(`/api/stories/${storyId}`)
 
 // 특정 동화의 제목 변경
-const updateStoryTitle = (storyId, payload) => api.patch(`/api/stories/${storyId}`, payload)
+const updateStoryTitle = (payload) => api.patch(`/api/stories/${payload.storyId}`, payload.title)
 
 // 동화 등록
 const registerStory = (payload) => api.post(`/api/stories`, payload)

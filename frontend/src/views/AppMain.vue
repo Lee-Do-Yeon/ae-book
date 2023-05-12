@@ -32,7 +32,14 @@
     </div>
     <!-- TODO : 각기 다음에 필요한 컴포넌트는 components/{domain} 하위에 작성 -->
     <div class="subject-line"><div class="subject">최신 리뷰</div><div class="red-bar"></div></div>
+     <div class="review-container">
+      <div v-show="reviewMainList.length == 0">
+        <p class="p-margin p-font">등록된 리뷰가 없습니다</p>
+      </div>
+      <div v-show="reviewMainList.length > 0">
         <review-carousel-view :items="reviewMainList"></review-carousel-view>
+      </div>
+     </div>
     <!-- TODO : 우리 아이들 작품(만든 동화) 리스트 컴포넌트 -->
     <div class="subject-line painting-slide"><div class="subject">우리 <span style="color:#FF0000">아</span><span style="color:#3F80FF">이</span><span style="color:#41B82D">들</span> 작품</div><div class="red-bar"></div></div>
     <main-painting-slide :items="mainPaintingList"></main-painting-slide>
@@ -80,6 +87,9 @@ export default {
 </script>
 
 <style scoped>
+.p-margin {
+  margin-top: 60px;
+}
 .carousel-container {
   margin: auto;
   height: 500px;

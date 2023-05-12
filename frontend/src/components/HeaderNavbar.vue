@@ -34,7 +34,7 @@
                 </b-nav-item>
                 <b-nav-item>
                     <router-link to="/book/search">
-                      <div class="nav-menu fourth">
+                      <div class="nav-menu fourth" @click="RESET_BOOK_SEARCH()">
                         <span>제목으로 책 검색</span>
                       </div>
                     </router-link>
@@ -62,8 +62,9 @@
 
 <script>
 // TODO: 메인페이지 Navbar 배치 변경.
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 const userStore = 'userStore'
+const bookStore = 'bookStore'
 
 export default {
   name: 'HeaderNavbar',
@@ -85,6 +86,7 @@ export default {
 
   methods: {
     ...mapActions(userStore, ['userLogout']),
+    ...mapMutations(bookStore, ['RESET_BOOK_SEARCH']),
     logout () {
       if (window.confirm('로그아웃을 하시겠습니까?')) {
         this.userLogout().then(() => {

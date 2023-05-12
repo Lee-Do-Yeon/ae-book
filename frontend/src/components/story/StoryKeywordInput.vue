@@ -4,17 +4,14 @@
     <button @click="sendInputValue">전송</button>
     <div>{{storyResult}}</div>
     <button @click="playAudio()">오디오 재생</button>
-    <!-- <StoryChatGptView :storyResult="storyResult"></StoryChatGptView> -->
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import StoryChatGptView from './StoryChatGptView.vue'
 
 export default {
   components: {
-    StoryChatGptView
   },
   data () {
     return {

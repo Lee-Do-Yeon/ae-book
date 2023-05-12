@@ -1,14 +1,16 @@
 <template>
   <div>
-    <div class="item-container">
-      <img v-if="item.fileUrl" v-bind:src="item.fileUrl" class="item-img">
-      <img v-if="item.imgUrl" v-bind:src="item.imgUrl" class="item-img">
-      <img v-if="item.coverImageUrl" v-bind:src="item.coverImageUrl" class="item-img">
-    </div>
-    <div class="info-container">
-      <p class="title">{{ item.title | removeTitlePrefix | shortText(10, '...') }}</p>
-      <p class="author" v-if="item.author">{{ item.author | shortText(17, '...') }}</p>
-      <p class="price" v-if="item.price">{{ item.price | pricePoint }}원</p>
+    <div v-if="item !== null">
+      <div class="item-container">
+        <img v-if="item.fileUrl" v-bind:src="item.fileUrl" class="item-img">
+        <img v-if="item.imgUrl" v-bind:src="item.imgUrl" class="item-img">
+        <img v-if="item.coverImageUrl" v-bind:src="item.coverImageUrl" class="item-img">
+      </div>
+      <div class="info-container">
+        <p class="title">{{ item.title | removeTitlePrefix | shortText(10, '...') }}</p>
+        <p class="author" v-if="item.author">{{ item.author | shortText(17, '...') }}</p>
+        <p class="price" v-if="item.price">{{ item.price | pricePoint }}원</p>
+      </div>
     </div>
   </div>
 </template>

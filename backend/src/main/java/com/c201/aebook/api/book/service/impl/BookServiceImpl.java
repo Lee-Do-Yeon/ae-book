@@ -3,10 +3,6 @@ package com.c201.aebook.api.book.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.c201.aebook.api.notification.persistence.entity.NotificationEntity;
-import com.c201.aebook.api.notification.persistence.repository.NotificationRepository;
-import com.c201.aebook.auth.CustomUserDetails;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,11 +14,15 @@ import com.c201.aebook.api.book.presentation.dto.response.BookResponseDTO;
 import com.c201.aebook.api.book.presentation.dto.response.BookSearchResponseDTO;
 import com.c201.aebook.api.book.presentation.dto.response.BookSimpleResponseDTO;
 import com.c201.aebook.api.book.service.BookService;
+import com.c201.aebook.api.notification.persistence.entity.NotificationEntity;
+import com.c201.aebook.api.notification.persistence.repository.NotificationRepository;
+import com.c201.aebook.auth.CustomUserDetails;
 import com.c201.aebook.converter.BookConverter;
 import com.c201.aebook.utils.exception.CustomException;
 import com.c201.aebook.utils.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -42,8 +42,9 @@ public class BookServiceImpl implements BookService {
 		bookResponseDTO.setNotification(false);
 
 		// 사용자 정보를 가지고 있는 경우
-		if(customUserDetails != null) {
-			NotificationEntity notificationEntity = notificationRepository.findByUserIdAndBookId(Long.valueOf(customUserDetails.getUsername()), book.getId());
+		if (customUserDetails != null) {
+			NotificationEntity notificationEntity = notificationRepository.findByUserIdAndBookId(
+				Long.valueOf(customUserDetails.getUsername()), book.getId());
 
 			// notification 정보를 가지고 있는 경우
 			if (notificationEntity != null) {
@@ -66,7 +67,7 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public Page<BookSearchResponseDTO> searchBookList(String keyword, String[] searchTarget, Pageable pageable) {
-		Page<BookEntity> bookList = bookCustomRepository.searchBookList(keyword, searchTarget, pageable);
+		Page<BookEntity> bookList = bookCustomRepository.searchBookList(keyword.split(" "), searchTarget, pageable);
 		Page<BookSearchResponseDTO> result = bookList.map(book -> bookConverter.toBookSearchResponseDTO(book));
 		return result;
 	}
