@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +23,13 @@ import org.springframework.data.domain.Sort;
 import com.c201.aebook.api.book.persistence.entity.BookEntity;
 import com.c201.aebook.api.book.persistence.repository.BookCustomRepository;
 import com.c201.aebook.api.book.persistence.repository.BookRepository;
+import com.c201.aebook.api.book.presentation.dto.response.BookResponseDTO;
 import com.c201.aebook.api.book.presentation.dto.response.BookSearchResponseDTO;
+import com.c201.aebook.api.book.presentation.dto.response.BookSimpleResponseDTO;
+import com.c201.aebook.api.notification.persistence.entity.NotificationEntity;
 import com.c201.aebook.api.notification.persistence.repository.NotificationRepository;
+import com.c201.aebook.api.user.persistence.entity.UserEntity;
+import com.c201.aebook.auth.CustomUserDetails;
 import com.c201.aebook.converter.BookConverter;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +56,32 @@ public class BookServiceImplTest {
 
 	@Test
 	public void testSearchBookDetail() {
-		throw new RuntimeException("not yet implemented");
+		// given
+		String isbn = "isbn";
+		CustomUserDetails customUserDetails = new CustomUserDetails(UserEntity.builder().id(1L).build());
+		BookEntity book = BookEntity.builder().isbn("isbn").build();
+		NotificationEntity notificationEntity = NotificationEntity.builder().id(1L).build();
+		BDDMockito.given(bookRepository.findByIsbn(isbn)).willReturn(Optional.of(book));
+		BookResponseDTO responseDTO = BookResponseDTO.builder()
+			.isbn(book.getIsbn())
+			.build();
+		BDDMockito.given(bookConverter.toBookResponseDTO(book)).willReturn(responseDTO);
+		BDDMockito.given(
+				notificationRepository.findByUserIdAndBookId(Long.valueOf(customUserDetails.getUsername()), book.getId()))
+			.willReturn(notificationEntity);
+		// when
+		BookResponseDTO ret = subject.searchBookDetail(isbn, customUserDetails);
+
+		// then
+		Assertions.assertAll("결괏값 검증", () -> {
+			Assertions.assertNotNull(ret);
+			Assertions.assertEquals(ret.getIsbn(), isbn);
+			Assertions.assertEquals(ret.getNotificationId(), 1L);
+		});
+		BDDMockito.then(bookRepository).should(times(1)).findByIsbn(isbn);
+		BDDMockito.then(notificationRepository)
+			.should(times(1))
+			.findByUserIdAndBookId(Long.valueOf(customUserDetails.getUsername()), book.getId());
 	}
 
 	@Test
@@ -80,28 +111,25 @@ public class BookServiceImplTest {
 		String[] searchTarget = {"TITLE"};
 		Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
 		List<BookEntity> bookList = new ArrayList<>();
-		bookList.add(BookEntity.builder().title("title1").build());
-		bookList.add(BookEntity.builder().title("title2").build());
+		BookEntity book = BookEntity.builder().title("title").build();
+		bookList.add(book);
 		Page<BookEntity> bookPage = new PageImpl<>(bookList, pageable, bookList.size());
 		BDDMockito.given(bookCustomRepository.searchBookList(keyword.split(" "), searchTarget, pageable))
 			.willReturn(bookPage);
 
-		bookPage.stream().forEach(book -> {
-			BookSearchResponseDTO responseDTO = BookSearchResponseDTO.builder()
-				.title(book.getTitle())
-				.build();
+		BookSearchResponseDTO responseDTO = BookSearchResponseDTO.builder()
+			.title(book.getTitle())
+			.build();
 
-			BDDMockito.given(bookConverter.toBookSearchResponseDTO(book))
-				.willReturn(responseDTO);
-		});
+		BDDMockito.given(bookConverter.toBookSearchResponseDTO(book))
+			.willReturn(responseDTO);
 
 		// when
 		Page<BookSearchResponseDTO> ret = subject.searchBookList(keyword, searchTarget, pageable);
 		// then
 		Assertions.assertAll("결괏값 검증", () -> {
 			Assertions.assertNotNull(ret);
-			Assertions.assertEquals(ret.getContent().get(0).getTitle(), "title1");
-			Assertions.assertEquals(ret.getContent().get(1).getTitle(), "title2");
+			Assertions.assertEquals(ret.getContent().get(0).getTitle(), "title");
 		});
 		BDDMockito.then(bookCustomRepository)
 			.should(times(1))
@@ -110,7 +138,26 @@ public class BookServiceImplTest {
 
 	@Test
 	public void testGetNewBookList() {
-		throw new RuntimeException("not yet implemented");
+		// given
+		List<BookEntity> bookList = new ArrayList<>();
+		BookEntity book = BookEntity.builder().title("title1").build();
+		bookList.add(book);
+		BDDMockito.given(bookRepository.findTop16ByOrderByUpdatedAtDesc()).willReturn(bookList);
+
+		BookSimpleResponseDTO responseDTO = BookSimpleResponseDTO.builder()
+			.title(book.getTitle())
+			.build();
+
+		BDDMockito.given(bookConverter.toBookSimpleResponseDTO(book))
+			.willReturn(responseDTO);
+		// when
+		List<BookSimpleResponseDTO> ret = subject.getNewBookList();
+		// then
+		Assertions.assertAll("결괏값 검증", () -> {
+			Assertions.assertNotNull(ret);
+			Assertions.assertEquals(ret.get(0).getTitle(), "title1");
+		});
+		BDDMockito.then(bookRepository).should(times(1)).findTop16ByOrderByUpdatedAtDesc();
 	}
 
 }

@@ -15,12 +15,15 @@ public class RegexValidator {
 	 * @param isbn
 	 */
 	public void validateIsbn(String isbn) {
-		Pattern pattern = Pattern.compile("[A-Za-z0-9]{10}|\\d{13}");
+		if (isbn == null) {
+			throw new NullPointerException();
+		}
+
+		Pattern pattern = Pattern.compile("^[A-Za-z0-9]{10}$|^\\d{13}$");
 		Matcher matcher = pattern.matcher((isbn));
 
 		if (!matcher.find()) {
 			throw new CustomException(ErrorCode.INVALID_ISBN);
 		}
-
 	}
 }

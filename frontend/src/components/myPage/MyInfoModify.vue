@@ -4,23 +4,24 @@
     <div style="height:2px; background-color: #E0E0E0;"></div>
     <div>
       <form id="form-modifyInfo" method="post" action="">
-        <div class="form-input">닉네임
+        <div class="form-input">
+          <div class="input-label">닉네임</div>
           <input
             type="text"
             name="nickname"
             id="nickname"
-            v-model="user.nickname"
+            v-model="nickname"
             placeholder="새로운 닉네임을 입력해주세요"
           />
         </div>
 
-        <div class="form-input">이미지
-          <input type="file"
-            name="profileUrl"
-            id="profileUrl"
-            ref="fileInput"
-            accept="image/*"
-          />
+        <div class="form-input">
+          <div class="input-label">이미지</div>
+          <label for="file-upload" class="photo">
+            <img class="profile-img" :src="profileUrl" v-if="profileUrl"  />
+            <img v-else src="https://img.icons8.com/ios/100/camera--v4.png" alt="camera--v4" class="camera"/>
+          </label>
+          <input id="file-upload" type="file" name="profileUrl" @change="onFileChange"  ref="fileInput" accept=".jpg, .png, .jpeg"/>
         </div>
 
         <div>
@@ -50,7 +51,7 @@ export default {
       msg: '',
       msgState: null,
       nickname: '',
-      profileUrl: null
+      profileUrl: ''
     }
   },
   created () {
@@ -69,13 +70,13 @@ export default {
   methods: {
     ...mapActions(userStore, ['userUpdate', 'userDelete', 'userLogout']),
     async modifyUser () {
-      if (!this.user.nickname) {
+      if (!this.nickname) {
         alert('닉네임은 입력은 필수입니다!')
         return
       }
 
       let data = {
-        nickname: this.user.nickname
+        nickname: this.nickname
       }
 
       let formData = new FormData()
@@ -88,6 +89,18 @@ export default {
 
       await this.userUpdate(formData)
       alert('수정이 완료되었습니다.')
+      this.profileUrl = ''
+    },
+    onFileChange (e) {
+      const file = e.target.files[0]
+      this.previewImage(file)
+    },
+    previewImage (file) {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = e => {
+        this.profileUrl = e.target.result
+      }
     }
   }
 
@@ -102,14 +115,58 @@ export default {
 }
 
 .form-input {
-  margin: 30px auto;
+  /* margin: 30px auto; */
+  margin-left: 20px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   width:80%;
   text-align: left;
   font-size: 15px;
   font-weight: bold;
+  display: flex;
 }
 
 .invalid-feedback {
   text-align: left;
+}
+
+.photo {
+  height: 255px;
+  width: 40%;
+  /* margin: auto; */
+  border-radius: 10px;
+  border: 1px solid var(--ae-navy);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ae-btn {
+  cursor: pointer;
+}
+
+#file-upload {
+  display: none;
+}
+
+.camera {
+  width: 100px;
+  margin: auto;
+}
+
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.profile-img{
+  width:100%;
+  border-radius: 10px;
+}
+
+.input-label{
+  font-weight: 700;
+  margin-right: 20px;
+  font-size: medium;
 }
 </style>
