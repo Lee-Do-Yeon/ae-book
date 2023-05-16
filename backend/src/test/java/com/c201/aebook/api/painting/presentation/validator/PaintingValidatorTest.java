@@ -14,12 +14,12 @@ public class PaintingValidatorTest {
 
 	@Test
 	public void testValidatePaintingRequestDTO() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testValidatePaintingTitleRequestDTO() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 }

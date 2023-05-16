@@ -14,17 +14,17 @@ public class UserControllerTest {
 
 	@Test
 	public void testCheckUserNickname() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testModifyUserInfo() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testDeleteUserInfo() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 }

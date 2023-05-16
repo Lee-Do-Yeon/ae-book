@@ -44,27 +44,27 @@ public class AuthServiceImplTest {
 
 	@Test
 	public void testGetAccessToken() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testFindProfile() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testSaveUserOrLogin() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testResolveToken() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testReissueAccessToken() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 }

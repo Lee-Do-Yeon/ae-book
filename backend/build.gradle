@@ -72,39 +72,45 @@ dependencies {
 }
 
 jacoco {
-  // JaCoCo ¹öÀü
+  // JaCoCo ë²„ì „
   toolVersion = '0.8.5'
 
-//  Å×½ºÆ®°á°ú ¸®Æ÷Æ®¸¦ ÀúÀåÇÒ °æ·Î º¯°æ
-//  default´Â "$/jacoco"
+//  í…ŒìŠ¤íŠ¸ê²°ê³¼ ë¦¬í¬íŠ¸ë¥¼ ì €ì¥í•  ê²½ë¡œ ë³€ê²½
+//  defaultï¿½ï¿½ "$/jacoco"
 //  reportsDir = file("$buildDir/customJacocoReportDir")
 }
 
 jacocoTestReport {
   reports {
-    // ¿øÇÏ´Â ¸®Æ÷Æ®¸¦ ÄÑ°í ²ø ¼ö ÀÖ½À´Ï´Ù.
+   // ì›í•˜ëŠ” ë¦¬í¬íŠ¸ë¥¼ ì¼œê³  ëŒ ìˆ˜ ìˆìŠµë‹ˆë‹¤.
     html.enabled true
     xml.enabled false
     csv.enabled false
 
-//  °¢ ¸®Æ÷Æ® Å¸ÀÔ ¸¶´Ù ¸®Æ÷Æ® ÀúÀå °æ·Î¸¦ ¼³Á¤ÇÒ ¼ö ÀÖ½À´Ï´Ù.
-//  html.destination file("$buildDir/jacocoHtml")
+//  ê° ë¦¬í¬íŠ¸ íƒ€ì… ë§ˆë‹¤ ë¦¬í¬íŠ¸ ì €ì¥ ê²½ë¡œë¥¼ ì„¤ì •í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+    html.destination file("$buildDir/jacocoHtml")
 //  xml.destination file("$buildDir/jacoco.xml")
   }
 }
 
 jacocoTestCoverageVerification {
-  // ÀÌ Ä¿¹ö¸®Áö ±âÁØÀº ÀÌ ±ÛÀÇ ¸Ç ¾Æ·¡¿¡¼­ ´Ù½Ã ¼³¸íÇÏ°Ú½À´Ï´Ù.
   violationRules {
     rule {
+      enabled = true
       element = 'CLASS'
 
       limit {
         counter = 'LINE'
         value = 'COVEREDRATIO'
-        minimum = 0.10
+        minimum = 0.30
       }
-	  // Ä¿¹ö¸®Áö Ã¼Å©¸¦ Á¦¿ÜÇÒ Å¬·¡½ºµé
+      
+      // ë¹ˆ ì¤„ì„ ì œì™¸í•œ ì½”ë“œì˜ ë¼ì¸ìˆ˜ë¥¼ ìµœëŒ€ 500ë¼ì¸ìœ¼ë¡œ ì œí•œí•©ë‹ˆë‹¤.
+		limit {
+		    counter = 'LINE'
+		    value = 'TOTALCOUNT'
+		    maximum = 500
+		}
       excludes = [
 		'*.test.*',
 		'*.dto.*',
@@ -117,8 +123,8 @@ jacocoTestCoverageVerification {
 		'*.converter.*',
 		'*.exception.*',
 		'*.jwt.*',
-		'*Service.java',
-		'*Entity.java'
+		'*Service',
+		'*Entity'
       ]
 	  
 	  includes = [

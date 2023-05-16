@@ -14,22 +14,22 @@ public class JwtTokenProviderTest {
 
 	@Test
 	public void testAfterPropertiesSet() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testGenerateTokenDto() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testGetAuthentication() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testValidateToken() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 }

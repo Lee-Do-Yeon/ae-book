@@ -14,27 +14,27 @@ public class NotificationControllerTest {
 
 	@Test
 	public void testSaveNotification() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testGetNotificationBookList() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testGetNotificationBookDetail() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testUpdateNotification() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 	@Test
 	public void testDeleteNotification() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 }

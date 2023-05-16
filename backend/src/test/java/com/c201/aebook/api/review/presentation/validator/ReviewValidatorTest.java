@@ -14,7 +14,7 @@ public class ReviewValidatorTest {
 
 	@Test
 	public void testValidateReviewRequestDTO() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 }

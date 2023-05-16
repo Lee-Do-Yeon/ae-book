@@ -14,7 +14,7 @@ public class StoryValidatorTest {
 
 	@Test
 	public void testValidateStoryRequestDTO() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 }

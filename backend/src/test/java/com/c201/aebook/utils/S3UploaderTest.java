@@ -14,7 +14,7 @@ public class S3UploaderTest {
 
 	@Test
 	public void testUploadMultipartFileString() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 }

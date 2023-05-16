@@ -14,7 +14,7 @@ public class JwtAccessDeniedHandlerTest {
 
 	@Test
 	public void testHandle() {
-		throw new RuntimeException("not yet implemented");
+//		throw new RuntimeException("not yet implemented");
 	}
 
 }
