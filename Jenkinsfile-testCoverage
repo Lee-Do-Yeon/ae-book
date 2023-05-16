@@ -1,0 +1,32 @@
+pipeline 
+{
+	agent any
+	// tools {
+	// 	gradle 'gradle 7.6.1'
+	// }
+	environment {
+		PROJECT = 'ae-book'
+		APP_SPRING_API = 'backend'
+		APP_AI_API = 'ai'
+		APP_BATCH = 'batch'
+	}
+	stages {
+		stage('build-spring-api') {
+			when {
+				anyOf {
+					changeset "backend/**/*"
+				}
+			}
+			steps {
+				echo 'Build Start backend spring'
+				sh '''
+					chmod +x backend/gradlew
+					backend/gradlew -p backend cleanQuerydslSourceDir		
+					backend/gradlew -p backend build -x test
+					backend/gradlew -p backend testCoverage
+				'''
+				echo 'Build End backend spring'
+			}
+		}
+	}
+}
