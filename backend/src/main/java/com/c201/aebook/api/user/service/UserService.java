@@ -5,9 +5,9 @@ import com.c201.aebook.api.vo.UserSO;
 
 public interface UserService {
 
-    public void duplicatedUserByNickname(String nickname);
+    public boolean isDuplicatedUserByNickname(String nickname);
 
-    public String getProfileImage(long userId);
+    public String getProfileImage(Long userId);
 
     public UserResponseDTO updateUserInfo(Long userId, UserSO userSO);
 

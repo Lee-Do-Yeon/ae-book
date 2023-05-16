@@ -38,7 +38,10 @@ public class UserController {
     public BaseResponse<?> checkUserNickname(
             @RequestParam(name = "nickname") String nickname
     ) {
-        userService.duplicatedUserByNickname(nickname); // 닉네임 중복 검사\
+        // 닉네임 중복 검사
+        if(!userService.isDuplicatedUserByNickname(nickname)) {
+            new CustomException(ErrorCode.DUPLICATE_RESOURCE);
+        }
         return new BaseResponse<>(true, HttpStatus.OK.value(), "닉네임 중복 없음");
     }
 

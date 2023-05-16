@@ -79,6 +79,12 @@ export default {
       voiceBlob: {}
     }
   },
+  beforeMount () {
+    window.addEventListener('beforeunload', this.showConfirmation)
+  },
+  beforeDestroy () {
+    window.removeEventListener('beforeunload', this.showConfirmation)
+  },
   created () {
     this.keyword = this.$route.params.inputValue
     this.generateStory()
@@ -92,6 +98,11 @@ export default {
     this.onResetClick()
   },
   methods: {
+    showConfirmation (event) {
+      event.preventDefault()
+      event.returnValue = ''
+      return ''
+    },
     generateStory () {
       axios
         .post(`/fast/stories/gpt`, {

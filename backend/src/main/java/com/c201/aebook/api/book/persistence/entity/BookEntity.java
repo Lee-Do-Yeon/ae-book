@@ -61,8 +61,9 @@ public class BookEntity extends BaseEntity {
 	private int reviewCount;
 
 	@Builder
-	public BookEntity(String title, String description, String author, String publisher, Date publishDate, String isbn,
+	public BookEntity(Long id, String title, String description, String author, String publisher, Date publishDate, String isbn,
 		int price, String aladinUrl, String coverImageUrl, int scoreSum, int reviewCount) {
+		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.author = author;

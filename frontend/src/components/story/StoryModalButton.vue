@@ -34,8 +34,11 @@ export default {
     ...mapActions(storyStore, ['deleteStoryById']),
 
     closeModal () {
-      this.audio.pause()
-      this.$emit('close')
+      if (this.audio) {
+        this.audio.pause()
+        this.audio.currentTime = 0
+      }
+      this.$emit('close-modal')
     },
 
     deleteStoryModal () {

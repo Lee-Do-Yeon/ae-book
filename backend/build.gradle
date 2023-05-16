@@ -65,6 +65,9 @@ dependencies {
     // json
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
+    // test ?
+    implementation('org.hibernate.validator:hibernate-validator:6.1.2.Final')
+
 }
 
 tasks.named('test') {

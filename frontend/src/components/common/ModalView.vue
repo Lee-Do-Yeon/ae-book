@@ -13,7 +13,8 @@ export default {
     modalShow: {
       type: Boolean,
       required: true
-    }
+    },
+    audio: Object
   },
   components: {
   },
@@ -24,6 +25,10 @@ export default {
   },
   methods: {
     onHidden () {
+      if (this.audio) {
+        this.audio.pause()
+        this.audio.currentTime = 0
+      }
       this.$emit('close-modal')
     }
   },

@@ -22,7 +22,11 @@ export default {
       this.$emit('close')
     },
     clickDelete (id) {
-      this.deletePainting(id)
+      let request = {
+        paintingId: id,
+        type: 'COLOR'
+      }
+      this.deletePainting(request)
       this.closeModal()
     },
     coloring () {

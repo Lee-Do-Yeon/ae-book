@@ -1,5 +1,6 @@
 package com.c201.aebook.api.user.service.impl;
 
+import com.c201.aebook.api.notification.service.impl.NotificationServiceImpl;
 import com.c201.aebook.api.user.persistence.entity.UserEntity;
 import com.c201.aebook.api.user.presentation.dto.response.UserResponseDTO;
 import com.c201.aebook.api.user.service.UserService;
@@ -19,20 +20,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserConverter userConverter;
+    private final NotificationServiceImpl notificationService;
 
     @Override
-    public void duplicatedUserByNickname(String nickname) {
+    public boolean isDuplicatedUserByNickname(String nickname) {
         // 닉네임 존재 여부를 true, false로 반환
         boolean userNickname = userRepository.existsByNickname(nickname);
 
-        // 닉네임이 존재한다면 중복이므로 에러 던지기
+        // 닉네임이 존재한다면 중복이므로 false 반환
         if(userNickname) {
-            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
+            return false;
         }
+
+        return true;
     }
 
     @Override
-    public String getProfileImage(long userId) {
+    public String getProfileImage(Long userId) {
         // 사용자 아이디로 프로필 이미지 찾기
         return userRepository.findProfileUrlById(userId);
     }
@@ -60,7 +64,10 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. 사용자 탈퇴처리(카카오 아이디와 전화번호는 null로 변경, 닉네임은 '탈퇴한 사용자'로 변경, status는 0으로 변경, 프로필 이미지는 기본 이미지로 변경)
+        // 2. 사용자가 신청한 알림 모두 삭제하기
+        notificationService.deleteAllNoticiation(userId);
+
+        // 3. 사용자 탈퇴처리(카카오 아이디와 전화번호는 null로 변경, 닉네임은 '탈퇴한 사용자'로 변경, status는 0으로 변경, 프로필 이미지는 기본 이미지로 변경)
         user.invalidateUserEntity(null, null, "탈퇴한 사용자", 0, "https://aebookbucket.s3.ap-northeast-2.amazonaws.com/basic_profile.png");
     }
 }

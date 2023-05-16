@@ -127,16 +127,23 @@ async def sound_to_review(audio: UploadFile = File(...), title: str = Form(...),
     if(rescode == 200):
         
         words = json.loads(response.text)['text'] #stt result
+        
+        #fail sound recognition
+        if words == '':
+            
+            return {"words": '', "review":'', "star":0, "respond":0}
+        
         length = np.random.choice(REVIEWLENGTH)
         
         review,star = create_gpt_review(title,words,writer,length)
         
         return {"words": words, "review":review,"star":star,"respond":1}
+    
     else:
-        return {"words": words, "review":'', "star":0, "respond":0}
+        
+        return {"words": '', "review":'', "star":0, "respond":0}
     
     
-
 #convert image to sketch
 @app.post("/fast/paintings/sketch")
 async def image_to_sketch(image: UploadFile = File(...)):

@@ -21,4 +21,6 @@ public interface NotificationService {
 
     public void deleteNotification(String userId, Long notificationId);
 
+    public void deleteAllNoticiation(Long userId);
+
 }

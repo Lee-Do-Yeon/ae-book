@@ -7,7 +7,6 @@ const saveReview = async (payload) => {
     const response = await api.post(`/api/reviews/${payload.isbn}`, payload.data)
     return response
   } catch (err) {
-    console.log(err)
     throw new Error('서평 등록을 실패하였습니다.')
   }
 }
@@ -17,7 +16,6 @@ const getMyReview = async isbn => {
     const response = await api.get(`/api/reviews/${isbn}/mine`)
     return response
   } catch (err) {
-    console.log(err)
     throw new Error('특정 도서 내 서평 조회를 실패했습니다.')
   }
 }
@@ -28,7 +26,6 @@ const modifyReview = async (payload) => {
     const response = await api.patch(`/api/reviews/${payload.reviewId}`, payload.data, { headers: {'Content-Type': 'application/json'} })
     return response
   } catch (err) {
-    console.log(err)
     throw new Error('서평 수정을 실패했습니다.')
   }
 }
@@ -38,7 +35,6 @@ const deleteReview = async reviewId => {
     const response = await api.delete(`/api/reviews/${reviewId}`)
     return response
   } catch (err) {
-    console.log(err)
     throw new Error('서평 삭제를 실패했습니다.')
   }
 }
@@ -49,7 +45,6 @@ const getReviewMainList = async () => {
     const response = await axios.get(`/api/reviews/latest`)
     return response
   } catch (err) {
-    console.log(err)
     throw new Error('최신 서평 조회를 실패했습니다.')
   }
 }
@@ -60,7 +55,6 @@ const getReviewBookList = async (request) => {
     const response = await axios.get(`/api/reviews/${request.isbn}?page=${request.page}&size=${request.size}&sort=${request.sort},${request.direction}`)
     return response
   } catch (err) {
-    console.log(err)
     throw new Error('특정 도서의 서평 조회를 실패했습니다.')
   }
 }
@@ -76,7 +70,6 @@ const getReviewMyList = async (request) => {
     const response = await api.get(`/api/reviews?page=${request.page}&size=${request.size}&sort=${request.sort},${request.direction}`)
     return response
   } catch (err) {
-    console.log(err)
     throw new Error('나의 서평 조회를 실패했습니다.')
   }
 }

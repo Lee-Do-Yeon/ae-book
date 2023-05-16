@@ -1,6 +1,7 @@
 package com.c201.aebook.api.notification.presentation.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,4 +20,10 @@ public class NotificationResponseDTO {
     @Schema(description = "알림 타입", defaultValue = "S")
     private String notificationType;
 
+    @Builder
+    public NotificationResponseDTO(Long id, int upperLimit, String notificationType) {
+        this.id = id;
+        this.upperLimit = upperLimit;
+        this.notificationType = notificationType;
+    }
 }

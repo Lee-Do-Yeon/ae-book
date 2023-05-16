@@ -4,8 +4,8 @@
       <h1 class="h1-title">동화책 목록</h1>
       <router-link to="/story/keyword"><button class="ae-btn btn-red">동화 만들러 가기</button></router-link>
     </div>
-    <ModalView :modalShow="isModalVisible" @close-modal="closeModal">
-      <StoryDetailView />
+    <ModalView :audio="audio" :modalShow="isModalVisible" @close-modal="closeModal">
+      <StoryDetailView @audio-submit="audioSubmit" @close-modal="closeModal"/>
     </ModalView>
     <div class="story-container">
       <div v-for="story in storyList" :key="story.storyId" @click="showModal(story.storyId)">
@@ -43,7 +43,8 @@ export default {
       request: {
         page: 0
       },
-      isModalVisible: false
+      isModalVisible: false,
+      audio: Object
     }
   },
   mounted () {
@@ -59,6 +60,9 @@ export default {
   methods: {
     ...mapActions(storyStore, ['getStoryList']),
     ...mapMutations(storyStore, ['setStoryId', 'clearStoryId']),
+    audioSubmit (audio) {
+      this.audio = audio
+    },
     showModal (storyId) {
       this.setStoryId(storyId)
       this.isModalVisible = true

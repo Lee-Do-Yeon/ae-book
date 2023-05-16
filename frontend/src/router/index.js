@@ -61,6 +61,8 @@ export default new Router({
             }
             if (from.name === 'StoryResult') {
               next({ name: 'StoryKeywordInput' })
+            } else if (from.name === null) {
+              next({name: 'StoryList'})
             } else {
               next()
             }
@@ -77,6 +79,9 @@ export default new Router({
             } else {
               alert('로그인이 필요한 페이지입니다.')
               next('/story/list')
+            }
+            if (from.name === null) {
+              next({name: 'StoryList'})
             }
           }
         }

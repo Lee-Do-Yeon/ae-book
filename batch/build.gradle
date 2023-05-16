@@ -4,6 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
+
 group = 'com.c201'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
@@ -37,6 +38,7 @@ dependencies {
 
 	// json
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
 
 }
 

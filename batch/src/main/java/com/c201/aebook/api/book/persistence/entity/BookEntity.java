@@ -97,4 +97,10 @@ public class BookEntity extends BaseEntity {
     public void setId(Long id) {
         this.id = id;
     }
+
+    @Builder
+    public BookEntity(String title, String author) {
+        this.title = title;
+        this.author = author;
+    }
 }

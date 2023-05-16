@@ -48,7 +48,8 @@ const paintingStore = {
       state.paintingPageSetting = { pageable, last, first, totalPages, size, totalElements, numberOfElements, empty }
     },
     ADD_PAINTING: (state, data) => {
-      state.paintingList.push(data)
+      state.paintingList.unshift(data)
+      state.paintingList.pop()
     },
     DELETE_PAINTING: (state, data) => {
       const index = state.paintingList.findIndex(item => item.id === data)
@@ -60,11 +61,10 @@ const paintingStore = {
     }
   },
   actions: {
-    async savePainting ({ commit }, formdata) {
+    async savePainting ({ dispatch }, formdata) {
       await savePainting(formdata)
         .then(({ data }) => {
-          commit('SET_PAINTING', data.result)
-          commit('ADD_PAINTING', data.result)
+          dispatch('getPaintingList', {type: 'COLOR'})
         })
         .catch(error => {
           console.error(error)
@@ -122,12 +122,11 @@ const paintingStore = {
           alert('그림 다운로드에 실패했습니다.' + error)
         })
     },
-    async deletePainting ({ commit }, paintingId) {
-      await deletePainting(paintingId)
+    async deletePainting ({ dispatch }, request) {
+      await deletePainting(request.paintingId)
         .then(({ data }) => {
           alert('그림을 성공적으로 삭제했습니다.')
-          commit('SET_PAINTING', null)
-          commit('DELETE_PAINTING', data.result)
+          dispatch('getPaintingList', request)
         })
         .catch(error => {
           alert('그림 삭제에 실패했습니다.' + error)

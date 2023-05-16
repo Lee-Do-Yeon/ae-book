@@ -154,11 +154,10 @@ export default {
     async deleteReview () {
       if (confirm('삭제하시겠습니까?')) {
         await this.deleteReviewAction(this.review.id)
+        this.book.scoreSum -= this.review.score
+        this.book.reviewCount -= 1
       }
-
       this.$emit('paging', this.page + 1)
-      this.book.scoreSum -= this.review.score
-      this.book.reviewCount -= 1
     },
     check (index) {
       this.review.score = index
