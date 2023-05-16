@@ -12,11 +12,6 @@ pipeline
 	}
 	stages {
 		stage('build-spring-api') {
-			when {
-				anyOf {
-					changeset "backend/**/*"
-				}
-			}
 			steps {
 				echo 'Build Start backend spring'
 				sh '''
