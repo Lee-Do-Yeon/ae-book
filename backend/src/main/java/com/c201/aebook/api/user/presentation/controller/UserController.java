@@ -67,7 +67,6 @@ public class UserController {
             // 파일을 받지 않았으면 이전 이미지
             profileUrl = userService.getProfileImage(userId);
         }
-        // log.info("profileUrl : {}", profileUrl);
 
         // 3. 사용자 정보 수정
         UserSO userSO = userConverter.toUserSO(userUpdateRequestDTO.getNickname(), profileUrl);

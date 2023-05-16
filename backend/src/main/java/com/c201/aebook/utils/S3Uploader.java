@@ -46,11 +46,12 @@ public class S3Uploader {
 		return amazonS3Client.getUrl(bucket, fileName).toString();
 	}
 
+	// TODO : 했는지 안했는지에 따라 로그 처리하는데 이거 나쁜 방식입니다. 적절한 방법으로 바꿔주세요
 	private void removeNewFile(File targetFile) {
 		if (targetFile.delete()) {
-			log.info("파일이 삭제되었습니다.");
+			log.error("파일이 삭제되었습니다.");
 		} else {
-			log.info("파일이 삭제되지 못했습니다.");
+			log.error("파일이 삭제되지 못했습니다.");
 		}
 	}
 

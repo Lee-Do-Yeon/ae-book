@@ -82,8 +82,6 @@ public class AuthServiceImpl implements AuthService {
                 String.class
         );
 
-        // log.info("access : {}", accessTokenResponse);
-
         // 4. 발급 받은 카카오 Access token 정보 중 필요한 정보만 KakaoTokenDto에 저장
         ObjectMapper objectMapper = new ObjectMapper();
         KakaoTokenDTO kakaoTokenDto = null;
@@ -166,7 +164,6 @@ public class AuthServiceImpl implements AuthService {
 
             userRepository.save(user);
         }
-        // log.info("user info : {}", user.getNickname());
 
         // 3. 유저의 token 발급
         TokenDTO tokenDto = jwtTokenProvider.generateTokenDto(String.valueOf(user.getId()));
@@ -220,7 +217,6 @@ public class AuthServiceImpl implements AuthService {
         logoutValueOperations.set(tokenSO.getAccessToken(), tokenSO.getAccessToken());
 
         // 5. 토큰 새로 생성
-        log.info("userId : {}", authentication.getName());
         TokenDTO tokenDTO = jwtTokenProvider.generateTokenDto(authentication.getName());
 
         // 6. Redis에 refreshToken 저장

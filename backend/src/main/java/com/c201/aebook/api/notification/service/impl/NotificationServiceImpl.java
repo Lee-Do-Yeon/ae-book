@@ -83,7 +83,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .price(notification.getBook().getPrice())
                 .coverImageUrl(notification.getBook().getCoverImageUrl())
                 .build());
-//        return notifications.map(notification -> notificationConverter.toNotificationBookListResponseDTO(notification));
     }
 
     @Override
@@ -91,8 +90,6 @@ public class NotificationServiceImpl implements NotificationService {
         // 사용자가 알림 신청한 내역 가져오기
         NotificationEntity notificationEntity = notificationRepository.findByNotificationId(notificationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOTIFICATION_NOT_FOUND));
-
-        log.info("notification : {}", notificationEntity.getBook().getTitle());
 
         return NotificationBookDetailResponseDTO.builder()
                 .id(notificationId)
