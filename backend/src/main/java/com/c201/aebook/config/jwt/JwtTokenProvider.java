@@ -61,7 +61,6 @@ public class JwtTokenProvider implements InitializingBean {
                 .compact();
 
         // 리프레시 토큰 생성
-        // log.info("token : {}", new Date(now + REFRESH_TOKEN_EXPIRE_TIME));
         String refreshToken = Jwts.builder()
                 .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -98,13 +97,11 @@ public class JwtTokenProvider implements InitializingBean {
      * return : boolean
      * */
     public boolean validateToken(String token) {
-        log.info("token : {}", token);
 
         ValueOperations<String, String> logoutValueOperations = redisTemplate.opsForValue();
 
         // 토큰이 null이라면 로그아웃된 유저의 토큰
         if (logoutValueOperations.get(token) != null) {
-            log.info("로그아웃된 토큰입니다.");
             return false;
         }
 
@@ -113,13 +110,13 @@ public class JwtTokenProvider implements InitializingBean {
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             // JWT가 올바르게 구성되지 않았을 때
-            log.info("잘못된 JWT 서명입니다.");
+            log.error("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다.");
+            log.error("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.");
+            log.error("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다.");
+            log.error("JWT 토큰이 잘못되었습니다.");
         }
         return false;
     }

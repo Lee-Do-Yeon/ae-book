@@ -39,7 +39,6 @@ public class NotificationServiceImpl implements NotificationService {
         // 1. isbn 유효성 검증
         BookEntity bookEntity = bookRepository.findByIsbn(notificationSO.getIsbn())
                 .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
-        // log.info("book : {}", bookEntity.getIsbn());
 
         // 2. userId 유효성 검증
         UserEntity userEntity = userRepository.findById(Long.valueOf(userId))

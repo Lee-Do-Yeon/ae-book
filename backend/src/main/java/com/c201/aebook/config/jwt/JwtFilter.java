@@ -28,22 +28,20 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt = resolveToken(request);
-        // log.info("jwt : {}", jwt);
 
         try {
             if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.info("set Authentication to security context for '{}', uri: {}", authentication.getName(), request.getRequestURI());
             }
         } catch (ExpiredJwtException e){
-            log.info("ExpiredJwtException: {}", e.getMessage());
+            log.error("ExpiredJwtException: {}", e.getMessage());
             throw new JwtException("토큰 기한이 만료");
         }catch (IllegalArgumentException e){
-            log.info("IllegalArgumentException: {}", e.getMessage());
+            log.error("IllegalArgumentException: {}", e.getMessage());
             throw new JwtException("유효하지 않은 토큰");
         }catch (SignatureException e){
-            log.info("SignatureException: {}", e.getMessage());
+            log.error("SignatureException: {}", e.getMessage());
             throw new JwtException("사용자 인증 실패");
         }
 

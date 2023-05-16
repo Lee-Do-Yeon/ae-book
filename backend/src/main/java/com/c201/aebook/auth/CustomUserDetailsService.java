@@ -21,12 +21,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("loadUserByUsername username : {}", username);
 
         long id = Long.parseLong(username);
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당 유저 정보를 찾을 수 없습니다"));
 
-        // log.info("user : {}", user.getNickname());
         return new CustomUserDetails(user);
     }
 }
