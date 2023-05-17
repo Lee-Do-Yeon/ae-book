@@ -42,12 +42,16 @@ const notificationStore = {
   },
   actions: {
     async notificationSave ({ commit }, data) {
+      let result = -1
       await saveNotification(data)
         .then(({ data }) => {
+          result = 1
         })
         .catch(error => {
           console.log(error)
+          result = 0
         })
+      return result
     },
     async getBookNotificationList ({ commit }, request) {
       await getNotificationList(request)

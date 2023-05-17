@@ -233,8 +233,12 @@ export default {
       }
 
       this.notificationSave(data)
-        .then(() => {
-          alert('알림이 성공적으로 등록되었습니다!')
+        .then((result) => {
+          if (result === 1) {
+            alert('알림이 성공적으로 등록되었습니다!')
+          } else {
+            alert('알림 신청에 실패하였습니다.')
+          }
           this.getBookDetail(this.book.isbn)
         })
       this.$nextTick(() => {

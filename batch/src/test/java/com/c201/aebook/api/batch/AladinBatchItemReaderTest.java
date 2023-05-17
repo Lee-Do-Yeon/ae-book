@@ -1,11 +1,7 @@
 package com.c201.aebook.api.batch;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,10 +13,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
-import org.xml.sax.SAXException;
 
 import com.c201.aebook.api.book.persistence.entity.BookEntity;
-import com.c201.aebook.helper.AladinBatchItemReaderHelper;
+import com.c201.aebook.helper.ItemReaderDelegate;
 
 @ExtendWith(MockitoExtension.class)
 public class AladinBatchItemReaderTest {
@@ -32,11 +27,10 @@ public class AladinBatchItemReaderTest {
 	private AladinBatchItemReader subject;
 
 	@Mock
-	private AladinBatchItemReaderHelper helper;
+	private ItemReaderDelegate helper;
 
 	@BeforeEach
 	protected void setUp() throws Exception {
-		ReflectionTestUtils.setField(subject, "API_KEY", "ttbleedy9091441001");
 		ReflectionTestUtils.setField(helper, "API_KEY", "ttbleedy9091441001");
 	}
 
@@ -51,9 +45,9 @@ public class AladinBatchItemReaderTest {
 		mockBooks.add(BookEntity.builder().author("작가더미2").title("제목더미2").build());
 
 		// getDataFromApi() 호출 결과를 고정
-		AladinBatchItemReaderHelper mockHelper = Mockito.spy(helper);
-		Mockito.doReturn(mockBooks).when(mockHelper).getDataFromApi();
-		ReflectionTestUtils.setField(mockReader, "aladinBatchItemReaderHelper", mockHelper);
+		ItemReaderDelegate mockHelper = Mockito.spy(helper);
+		Mockito.doReturn(mockBooks).when(mockHelper).getBookListFromAPI();
+		ReflectionTestUtils.setField(mockReader, "itemReaderDelegate", mockHelper);
 
 		// when
 		BookEntity actualBook = mockReader.read();
@@ -63,7 +57,33 @@ public class AladinBatchItemReaderTest {
 	}
 
 	@Test
-	public void testGetDataFromApi() throws IOException, ParserConfigurationException, SAXException, ParseException {
+	public void testGetDataFromApi() throws Exception {
+		//given
+		ItemReaderDelegate mockHelper = Mockito.spy(helper);
+
+		// Mock 도서 정보
+		List<BookEntity> mockBooks = new ArrayList<>();
+		mockBooks.add(BookEntity.builder().author("작가1").title("제목1").build());
+		mockBooks.add(BookEntity.builder().author("작가2").title("제목2").build());
+
+		// mockHelper.getDataFromApi()가 호출될 때 mockBooks를 반환하도록 설정
+		Mockito.when(mockHelper.getBookListFromAPI()).thenReturn(mockBooks);
+
+		// reader에 mockHelper를 주입하여 private 필드인 itemReaderDelegate를 설정
+		ReflectionTestUtils.setField(subject, "itemReaderDelegate", mockHelper);
+
+		//when
+		List<BookEntity> books = mockHelper.getBookListFromAPI();
+
+		//then
+		Assertions.assertEquals(mockBooks.size(), books.size());
+
+		for (int i = 0; i < mockBooks.size(); i++) {
+			BookEntity expected = mockBooks.get(i);
+			BookEntity actual = books.get(i);
+			Assertions.assertEquals(expected.getAuthor(), actual.getAuthor());
+			Assertions.assertEquals(expected.getTitle(), actual.getTitle());
+		}
 
 	}
 

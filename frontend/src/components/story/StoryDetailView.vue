@@ -72,7 +72,7 @@ export default {
         this.audio.pause()
         this.audio.currentTime = 0
       }
-      this.$emit('close')
+      this.$emit('close-modal')
     },
     updateTitle () {
       this.storyId = this.getStoryId

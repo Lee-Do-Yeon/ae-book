@@ -5,7 +5,7 @@
         <h2>동화 키워드 입력</h2>
       </div>
       <div id="inputGroup">
-        <input type="text" v-model="inputValue" />
+        <input type="text" v-model="inputValue" ref="keywordInput"/>
         <button @click="sendInputValue" class="ae-btn btn-red">전송</button>
       </div>
     </div>
@@ -23,7 +23,12 @@ export default {
   },
   methods: {
     sendInputValue () {
-      this.$router.push({ name: 'StoryPaintingBoard', params: { inputValue: this.inputValue } })
+      if (this.inputValue === '') {
+        alert('키워드를 입력해주세요.')
+        this.$refs.keywordInput.focus()
+      } else {
+        this.$router.push({ name: 'StoryPaintingBoard', params: { inputValue: this.inputValue } })
+      }
     }
   }
 }

@@ -8,7 +8,8 @@ const bookStore = {
     bookList: [],
     bookPageSetting: null,
     totalSearchCount: 0,
-    searchKeyword: ''
+    searchKeyword: '',
+    bookMainList: []
   },
   /*
   Gettes: state의 변수들을 get하는역할을 한다.
@@ -32,6 +33,9 @@ const bookStore = {
     },
     SET_BOOK_LIST: (state, data) => {
       state.bookList = data
+    },
+    SET_MAIN_BOOK_LIST: (state, data) => {
+      state.bookMainList = data
     },
     RESET_BOOK_SEARCH (state) {
       state.bookList = []
@@ -81,7 +85,7 @@ const bookStore = {
     async getNewBookList ({ commit }, request) {
       await getNewBookList(request)
         .then(({ data }) => {
-          commit('SET_BOOK_LIST', data.result)
+          commit('SET_MAIN_BOOK_LIST', data.result)
         })
         .catch(error => {
           alert('최신 도서 리스트를 조회하는데 문제가 발생했습니다.')

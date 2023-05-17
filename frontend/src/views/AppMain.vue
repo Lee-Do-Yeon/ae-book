@@ -19,7 +19,7 @@
         </div>
       </router-link>
       <router-link :to="{ name: 'BookSearch' }">
-        <div class="main-menu fourth">
+        <div class="main-menu fourth" @click="RESET_BOOK_SEARCH()">
           <div class="menu-text">제목으로<br>도서 검색<br><br><img src="../assets/images/bookIcon.png" id="bookIcon"></div>
         </div>
       </router-link>
@@ -28,7 +28,7 @@
     <div class="clear"></div>
     <div class="subject-line"><div class="subject">새로 들어온 책</div><div class="red-bar"></div></div>
     <div class="carousel-container">
-      <book-carousel-view :items="bookList" :chunkSize="4"></book-carousel-view>
+      <book-carousel-view :items="bookMainList" :chunkSize="4"></book-carousel-view>
     </div>
     <!-- TODO : 각기 다음에 필요한 컴포넌트는 components/{domain} 하위에 작성 -->
     <div class="subject-line"><div class="subject">최신 리뷰</div><div class="red-bar"></div></div>
@@ -50,7 +50,7 @@
 import HeaderNavbarMain from '@/components/HeaderNavbarMain'
 import BookCarouselView from '@/components/common/list/BookCarouselView.vue'
 import PaintingCarouselView from '@/components/common/list/PaintingCarouselView.vue'
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import ReviewCarouselView from '../components/common/list/ReviewCarouselView.vue'
 import MainPaintingSlide from '../components/painting/MainPaintingSlide.vue'
 
@@ -70,11 +70,12 @@ export default {
   methods: {
     ...mapActions(reviewStore, ['getReviewMainListAction']),
     ...mapActions(bookStore, ['getNewBookList']),
-    ...mapActions(paintingStore, ['getNewPainting'])
+    ...mapActions(paintingStore, ['getNewPainting']),
+    ...mapMutations(bookStore, ['RESET_BOOK_SEARCH'])
   },
   computed: {
     ...mapState(reviewStore, ['reviewMainList']),
-    ...mapState(bookStore, ['bookList']),
+    ...mapState(bookStore, ['bookMainList']),
     ...mapState(paintingStore, ['mainPaintingList'])
   },
   mounted () {

@@ -13,7 +13,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +25,15 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.c201.aebook.api.batch.AladinBatchItemReader;
 import com.c201.aebook.api.book.persistence.entity.BookEntity;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class AladinBatchItemReaderHelper {
+@RequiredArgsConstructor
+public class ItemReaderDelegate {
 
 	private final String API_URL = "https://www.aladin.co.kr/ttb/api/ItemList.aspx";
 	private final String SEARCH_TARGET = "Used";
@@ -44,17 +44,21 @@ public class AladinBatchItemReaderHelper {
 	private final RestTemplate restTemplate;
 	@Value("${aladin.api.key}")
 	private String API_KEY;
-	private int nextIndex = 0;
-	private List<BookEntity> bookList = new ArrayList<>();
+
 	private final int OUT_OF_STOCK_FILTER = 1;
 	private final String COVER_SIZE = "Big";
 
-	@Autowired
-	public AladinBatchItemReaderHelper(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
+
+	public List<BookEntity> getBookListFromAPI() throws Exception{
+		return getDataFromApi();
 	}
 
-	public List<BookEntity> getDataFromApi() throws
+	public BookEntity getParsing(Node itemNode) throws Exception{
+		return parseBook(itemNode);
+	}
+
+
+	private List<BookEntity> getDataFromApi() throws
 		IOException,
 		ParserConfigurationException,
 		SAXException,
@@ -76,7 +80,6 @@ public class AladinBatchItemReaderHelper {
 				.queryParam("outofStockfilter", OUT_OF_STOCK_FILTER)
 				.queryParam("Cover", COVER_SIZE);
 
-			System.out.println("여기있어요 = " + builder.toUriString());
 
 			NodeList itemNodes = getItemElementByUrl(builder, "item");
 			if(itemNodes == null) throw new IOException();
@@ -97,7 +100,7 @@ public class AladinBatchItemReaderHelper {
 		return books;
 	}
 
-	public BookEntity parseBook(Node itemNode) throws
+	private BookEntity parseBook(Node itemNode) throws
 		ParseException,
 		ParserConfigurationException,
 		IOException,
@@ -226,7 +229,7 @@ public class AladinBatchItemReaderHelper {
 		return book;
 	}
 
-	public NodeList getItemElementByUrl(UriComponentsBuilder builder, String tagName) throws
+	private NodeList getItemElementByUrl(UriComponentsBuilder builder, String tagName) throws
 		IOException,
 		SAXException,
 		ParserConfigurationException {
@@ -251,7 +254,7 @@ public class AladinBatchItemReaderHelper {
 	/*
 	 * 해당 태그의 값을 Integer로 변환
 	 * */
-	public int parseToInteger(Node nodeItem, String tagName) {
+	private int parseToInteger(Node nodeItem, String tagName) {
 		if (getChildText(nodeItem, tagName) != null) {
 			return Integer.parseInt(getChildText(nodeItem, tagName));
 		}
@@ -261,14 +264,14 @@ public class AladinBatchItemReaderHelper {
 	/*
 	 * 최저가 구함
 	 * */
-	public int getMinPrice(List<Integer> prices) {
+	private int getMinPrice(List<Integer> prices) {
 		return prices.stream().filter(Objects::nonNull).min(Integer::compareTo).orElse(0);
 	}
 
 	/*
 	 * 해당 태그 이름에 해당하는 노드 가져옴
 	 * */
-	public Node getChildNode(NodeList itemNode, String tagName) {
+	private Node getChildNode(NodeList itemNode, String tagName) {
 		for (int i = 0; i < itemNode.getLength(); i++) {
 			Node node = itemNode.item(i);
 			if (tagName.equals(node.getNodeName())) {
@@ -282,7 +285,7 @@ public class AladinBatchItemReaderHelper {
 	/*
 	 * 해당 태그의 text를 가져옴
 	 * */
-	public String getChildText(Node itemNode, String tagName) {
+	private String getChildText(Node itemNode, String tagName) {
 		if (itemNode == null)
 			return null;
 
