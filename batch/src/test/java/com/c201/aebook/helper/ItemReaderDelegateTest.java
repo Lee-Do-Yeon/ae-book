@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
@@ -129,7 +130,8 @@ class ItemReaderDelegateTest {
 			() -> Assertions.assertEquals("[중고] 주린이도 술술 읽는 친절한 주식책", book.getTitle()),
 			() -> Assertions.assertEquals("최정희, 이슬기 (지은이)", book.getAuthor()),
 			() -> Assertions.assertEquals("메이트북스", book.getPublisher()),
-			() -> Assertions.assertEquals("https://image.aladin.co.kr/product/24929/72/coversum/k912632497_1.jpg", book.getCoverImageUrl())
+			() -> Assertions.assertEquals("https://image.aladin.co.kr/product/24929/72/coversum/k912632497_1.jpg",
+				book.getCoverImageUrl())
 		);
 
 	}
@@ -142,20 +144,25 @@ class ItemReaderDelegateTest {
 		String dummyTagName = "item";
 
 		//mocking restTemplate.exchange 메서드
-		ResponseEntity<String> responseEntityMock = mock(ResponseEntity.class);
-		BDDMockito.when(responseEntityMock.getBody()).thenReturn(dummyResponse);
-		BDDMockito.when(restTemplate.exchange(eq(dummyUrl), eq(HttpMethod.GET), isNull(), eq(String.class)))
+		ResponseEntity<String> responseMock = mock(ResponseEntity.class);
+		ResponseEntity<String> responseEntityMock = ResponseEntity.ok().body(dummyResponse);;
+
+		BDDMockito.doReturn(dummyResponse).when(responseEntityMock.getBody());
+		BDDMockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.GET), Mockito.any(),
+				Mockito.eq(String.class)))
 			.thenReturn(responseEntityMock);
 
 		//mocking getItemElementByUrl
 		NodeList nodeListMock = mock(NodeList.class);
-		BDDMockito.when(subject.getElementsByUrl(UriComponentsBuilder.fromHttpUrl(dummyUrl), dummyTagName))
-			.thenReturn(nodeListMock);
+		BDDMockito.when(subject.getElementsByUrl(UriComponentsBuilder.fromHttpUrl(dummyUrl), dummyTagName)).thenReturn(nodeListMock);
 
-		//whent
+
+		//when
 		List<BookEntity> results = subject.getBookListFromAPI();
 
 		//then
+		Assertions.assertNotNull(results);
+
 
 	}
 

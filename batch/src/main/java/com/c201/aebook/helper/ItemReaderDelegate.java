@@ -90,7 +90,7 @@ public class ItemReaderDelegate {
 				.queryParam("Cover", COVER_SIZE);
 
 			NodeList itemNodes = getItemElementByUrl(builder, "item");
-			System.out.println("이놈 ===== " + itemNodes.toString());
+
 			if (itemNodes == null) {
 				throw new IOException();
 			}
@@ -252,6 +252,7 @@ public class ItemReaderDelegate {
 		ParserConfigurationException {
 
 		ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, String.class);
+		System.out.println("여기다 =" + response.getBody());
 
 		if (response == null || response.getBody() == null) {
 			throw new RuntimeException("API response is null or has no body.");
