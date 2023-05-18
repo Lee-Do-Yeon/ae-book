@@ -2,9 +2,8 @@ package com.c201.aebook.helper;
 
 import static org.mockito.Mockito.*;
 
-import java.awt.print.Book;
 import java.io.IOException;
-import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -29,10 +27,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.c201.aebook.api.book.persistence.entity.BookEntity;
@@ -48,13 +44,13 @@ class ItemReaderDelegateTest {
 
 	@BeforeEach
 	protected void setUp() throws Exception {
+		ReflectionTestUtils.setField(subject, "API_KEY", "API_KEY");
 		ReflectionTestUtils.setField(subject, "restTemplate", restTemplate);
 	}
 
-
 	@Test
 	@DisplayName("happy case")
-	public void testReplaceCharacterFromText(){
+	public void testReplaceCharacterFromText() {
 		//given
 		String input = "This is a &quot;test&quot; string.";
 		String expectedOutput = "This is a \"test\" string.";
@@ -62,12 +58,9 @@ class ItemReaderDelegateTest {
 		//when
 		String output = subject.replaceCharacterFromText(input);
 
-
 		//then
 		Assertions.assertEquals(output, expectedOutput);
 	}
-
-
 
 	@Test
 	public void testGetItemElementByUrl() throws ParserConfigurationException, IOException, SAXException {
@@ -82,7 +75,6 @@ class ItemReaderDelegateTest {
 		when(restTemplate.exchange(eq(dummyUrl), eq(HttpMethod.GET), isNull(), eq(String.class)))
 			.thenReturn(responseEntityMock);
 
-
 		//when
 		NodeList result = subject.getElementsByUrl(UriComponentsBuilder.fromHttpUrl(dummyUrl), dummyTagName);
 
@@ -95,15 +87,17 @@ class ItemReaderDelegateTest {
 
 	@Test
 	@DisplayName("happy case")
-	public void testParseBook() throws Exception{
+	public void testParseBook() throws Exception {
 		//given
 		Node itemNode = createMockItemNode();
 		String dummyResponse = "<item itemId=\"249297227\">\n" +
 			"    <title>[중고] 주린이도 술술 읽는 친절한 주식책</title>\n" +
-			"    <link>http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=249297227&amp;partner=openAPI&amp;start=api</link>\n" +
+			"    <link>http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=249297227&amp;partner=openAPI&amp;start=api</link>\n"
+			+
 			"    <author>최정희, 이슬기 (지은이)</author>\n" +
 			"    <pubDate>2020-09-01</pubDate>\n" +
-			"    <description>주식을 막 시작해서 모든 것이 막막한 사람들에게 든든한 길라잡이 역할을 한다. 주식이 여전히 어려운 주린이들이 투자에 본격적으로 나서기 전에 꼭 알아야 할 최소한의 필수 지식을 엄선해 술술 풀어냈다.</description>\n" +
+			"    <description>주식을 막 시작해서 모든 것이 막막한 사람들에게 든든한 길라잡이 역할을 한다. 주식이 여전히 어려운 주린이들이 투자에 본격적으로 나서기 전에 꼭 알아야 할 최소한의 필수 지식을 엄선해 술술 풀어냈다.</description>\n"
+			+
 			"    <isbn>K912632497</isbn>\n" +
 			"    <isbn13>9791160022988</isbn13>\n" +
 			"    <priceSales>13500</priceSales>\n" +
@@ -119,7 +113,8 @@ class ItemReaderDelegateTest {
 			"    </subInfo>\n" +
 			"</item>";
 		ResponseEntity<String> mockResponse = ResponseEntity.ok().body(dummyResponse);
-		BDDMockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.GET), Mockito.any(), Mockito.eq(String.class)))
+		BDDMockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.GET), Mockito.any(),
+				Mockito.eq(String.class)))
 			.thenReturn(mockResponse);
 
 		//when
@@ -130,13 +125,39 @@ class ItemReaderDelegateTest {
 
 		BookEntity book = result.get();
 
-		Assertions.assertEquals("[중고] 주린이도 술술 읽는 친절한 주식책", book.getTitle());
-		Assertions.assertEquals("최정희, 이슬기 (지은이)", book.getAuthor());
-		Assertions.assertEquals("메이트북스", book.getPublisher());
-		Assertions.assertEquals("https://image.aladin.co.kr/product/24929/72/coversum/k912632497_1.jpg", book.getCoverImageUrl());
+		Assertions.assertAll("parsing book",
+			() -> Assertions.assertEquals("[중고] 주린이도 술술 읽는 친절한 주식책", book.getTitle()),
+			() -> Assertions.assertEquals("최정희, 이슬기 (지은이)", book.getAuthor()),
+			() -> Assertions.assertEquals("메이트북스", book.getPublisher()),
+			() -> Assertions.assertEquals("https://image.aladin.co.kr/product/24929/72/coversum/k912632497_1.jpg", book.getCoverImageUrl())
+		);
 
 	}
 
+	@Test
+	public void getDataFromAPI() throws Exception {
+		//given
+		String dummyUrl = "https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=API_KEY&QueryType=ItemNewAll&MaxResults=50&start=1&SearchTarget=Used&Version=20131101&SubSearchTarget=Book&OptResult=usedList&Output=xml&outofStockfilter=1&Cover=Big";
+		String dummyResponse = "<item><subInfo>Some information</subInfo></item>";
+		String dummyTagName = "item";
+
+		//mocking restTemplate.exchange 메서드
+		ResponseEntity<String> responseEntityMock = mock(ResponseEntity.class);
+		BDDMockito.when(responseEntityMock.getBody()).thenReturn(dummyResponse);
+		BDDMockito.when(restTemplate.exchange(eq(dummyUrl), eq(HttpMethod.GET), isNull(), eq(String.class)))
+			.thenReturn(responseEntityMock);
+
+		//mocking getItemElementByUrl
+		NodeList nodeListMock = mock(NodeList.class);
+		BDDMockito.when(subject.getElementsByUrl(UriComponentsBuilder.fromHttpUrl(dummyUrl), dummyTagName))
+			.thenReturn(nodeListMock);
+
+		//whent
+		List<BookEntity> results = subject.getBookListFromAPI();
+
+		//then
+
+	}
 
 	/*
 	 * 테스트를 위한 가상의 node 데이터를 만듬
@@ -157,7 +178,8 @@ class ItemReaderDelegateTest {
 
 		// link 요소
 		Element linkElement = document.createElement("link");
-		linkElement.setTextContent("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=316982043&partner=openAPI&start=api");
+		linkElement.setTextContent(
+			"http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=316982043&partner=openAPI&start=api");
 		itemElement.appendChild(linkElement);
 
 		// author 요소
@@ -172,7 +194,8 @@ class ItemReaderDelegateTest {
 
 		// description 요소
 		Element descriptionElement = document.createElement("description");
-		descriptionElement.setTextContent("주식을 막 시작해서 모든 것이 막막한 사람들에게 든든한 길라잡이 역할을 한다. 주식이 여전히 어려운 주린이들이 투자에 본격적으로 나서기 전에 꼭 알아야 할 최소한의 필수 지식을 엄선해 술술 풀어냈다.");
+		descriptionElement.setTextContent(
+			"주식을 막 시작해서 모든 것이 막막한 사람들에게 든든한 길라잡이 역할을 한다. 주식이 여전히 어려운 주린이들이 투자에 본격적으로 나서기 전에 꼭 알아야 할 최소한의 필수 지식을 엄선해 술술 풀어냈다.");
 		itemElement.appendChild(descriptionElement);
 
 		// isbn 요소
@@ -204,7 +227,6 @@ class ItemReaderDelegateTest {
 		Element adultElement = document.createElement("adult");
 		adultElement.setTextContent("false");
 		itemElement.appendChild(adultElement);
-
 
 		// subInfo 요소
 		Element subInfoElement = document.createElement("subInfo");
@@ -240,7 +262,8 @@ class ItemReaderDelegateTest {
 
 		// link 요소
 		Element newBookLinkElement = document.createElement("link");
-		newBookLinkElement.setTextContent("https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=249297227&partner=openAPI");
+		newBookLinkElement.setTextContent(
+			"https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=249297227&partner=openAPI");
 		newBookElement.appendChild(newBookLinkElement);
 
 		// usedList 요소
@@ -264,7 +287,8 @@ class ItemReaderDelegateTest {
 		// link 요소
 		Element aladinUsedLinkElement = document.createElement("link");
 		// Type=2&partner=openAPI
-		aladinUsedLinkElement.setTextContent("https://www.aladin.co.kr/shop/UsedShop/wuseditemall.aspx?ItemId=249297227&TabType=2&partner=openAPI");
+		aladinUsedLinkElement.setTextContent(
+			"https://www.aladin.co.kr/shop/UsedShop/wuseditemall.aspx?ItemId=249297227&TabType=2&partner=openAPI");
 		aladinUsedElement.appendChild(aladinUsedLinkElement);
 
 		// userUsed 요소
@@ -283,7 +307,8 @@ class ItemReaderDelegateTest {
 
 		// link 요소
 		Element userUsedLinkElement = document.createElement("link");
-		userUsedLinkElement.setTextContent("https://www.aladin.co.kr/shop/UsedShop/wuseditemall.aspx?ItemId=249297227&TabType=1&partner=openAPI");
+		userUsedLinkElement.setTextContent(
+			"https://www.aladin.co.kr/shop/UsedShop/wuseditemall.aspx?ItemId=249297227&TabType=1&partner=openAPI");
 		userUsedElement.appendChild(userUsedLinkElement);
 
 		// spaceUsed 요소
@@ -302,12 +327,11 @@ class ItemReaderDelegateTest {
 
 		// link 요소
 		Element spaceUsedLinkElement = document.createElement("link");
-		spaceUsedLinkElement.setTextContent("https://www.aladin.co.kr/shop/UsedShop/wuseditemall.aspx?ItemId=249297227&TabType=3&partner=openAPI");
+		spaceUsedLinkElement.setTextContent(
+			"https://www.aladin.co.kr/shop/UsedShop/wuseditemall.aspx?ItemId=249297227&TabType=3&partner=openAPI");
 		spaceUsedElement.appendChild(spaceUsedLinkElement);
 
 		return itemElement;
 	}
-
-
 
 }
