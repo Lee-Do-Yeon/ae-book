@@ -13,8 +13,6 @@ import com.c201.aebook.api.vo.PaintingSO;
 public interface PaintingConverter {
 	PaintingSO toPaintingSO(Long userId, String fileUrl, PaintingRequestDTO paintingRequestDTO);
 
-	PaintingEntity toPaintingEntity(PaintingSO paintingSO);
-
 	PaintingResponseDTO toPaintingResponseDTO(PaintingEntity paintingEntity);
 
 	PaintingPatchSO toPaintingPatchSO(Long paintingId, Long userId, PaintingTitleRequestDTO paintingTitleRequestDTO);

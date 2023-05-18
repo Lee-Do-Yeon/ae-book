@@ -14,7 +14,7 @@
                 <b-nav-item>
                     <router-link to="/story">
                       <div class="nav-menu first">
-                        <span>동화책 만들기</span>
+                        <span>내가 만드는 동화</span>
                       </div>
                     </router-link>
                 </b-nav-item>
@@ -43,7 +43,6 @@
             <!-- 로그인 후 -->
             <b-navbar-nav class="ml-auto" v-if=isLoginUser>
                     <b-nav-form>
-                        {{ user.nickname }} 님
                         <router-link :to="{ name: 'MyPage' }" class="link">
                           <b-button size="sm" class="btn-white"><img src="https://img.icons8.com/material-rounded/24/null/person-male.png"/><span class="to-my-page">마이페이지</span></b-button></router-link>
                           <b-button size="sm" @click="logout" class="btn-white"><img width="25" height="25" src="https://img.icons8.com/external-outline-kendis-lasman/64/external-logout-user-interface-outline-kendis-lasman.png"/><span class="to-my-page">&nbsp;로그아웃</span></b-button>
@@ -119,7 +118,7 @@ export default {
 }
 
 #navbarNav{
-  margin-bottom: -33px;
+  margin-bottom: -35px;
 }
 
 .nav-menu.first {

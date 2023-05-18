@@ -4,6 +4,7 @@ import lombok.*;
 
 @Setter
 @Getter
+@Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class KakaoTokenDTO {

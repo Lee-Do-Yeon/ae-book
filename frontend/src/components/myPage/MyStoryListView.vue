@@ -54,14 +54,14 @@ export default {
   },
 
   mounted () {
-    this.getStoryList(this.request)
+    this.getMyStoryList(this.request)
   },
   computed: {
     ...mapState(storyStore, ['storyList', 'storyPageSetting']),
     ...mapGetters(storyStore, ['getStoryId'])
   },
   methods: {
-    ...mapActions(storyStore, ['getStoryList']),
+    ...mapActions(storyStore, ['getMyStoryList']),
     ...mapMutations(storyStore, ['setStoryId', 'clearStoryId']),
     showModal (storyId) {
       this.setStoryId(storyId)
@@ -73,7 +73,7 @@ export default {
     },
     paging (page) {
       this.request['page'] = page - 1
-      this.getStoryList(this.request)
+      this.getMyStoryList(this.request)
     }
   }
 }

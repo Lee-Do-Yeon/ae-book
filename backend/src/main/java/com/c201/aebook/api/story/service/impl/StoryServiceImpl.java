@@ -1,13 +1,16 @@
 package com.c201.aebook.api.story.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.c201.aebook.api.story.presentation.dto.response.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.c201.aebook.api.story.persistence.entity.StoryEntity;
 import com.c201.aebook.api.story.persistence.repository.StoryRepository;
-import com.c201.aebook.api.story.presentation.dto.response.StoryDeleteResponseDTO;
-import com.c201.aebook.api.story.presentation.dto.response.StoryResponseDTO;
 import com.c201.aebook.api.story.service.StoryService;
 import com.c201.aebook.api.user.persistence.entity.UserEntity;
 import com.c201.aebook.api.user.persistence.repository.UserRepository;
@@ -19,6 +22,8 @@ import com.c201.aebook.utils.exception.CustomException;
 import com.c201.aebook.utils.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +33,7 @@ public class StoryServiceImpl implements StoryService {
 	private final StoryConverter storyConverter;
 
 	@Override
-	public void saveStory(StorySO storySO) {
+	public StorySaveResponseDTO saveStory(StorySO storySO) {
 		// 유효한 userId인지 검증
 		UserEntity user = userRepository.findById(storySO.getUserId())
 			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -40,31 +45,45 @@ public class StoryServiceImpl implements StoryService {
 			.imgUrl(storySO.getImgUrl())
 			.user(user)
 			.build());
+
+		return storyConverter.toStorySaveResponseDTO(storySO);
 	}
 
 	@Override
-	public Page<StoryResponseDTO> getStoryList(Long userId, Pageable pageable) {
+	@Transactional(readOnly = true)
+	public Page<StoryListResponseDTO> getStoryListByUserId(Long userId, Pageable pageable) {
 		// 1. User 유효성 검증
 		UserEntity userEntity = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-		Page<StoryEntity> stories = storyRepository.findAllByUserId(userId, pageable);
-		return stories.map(storyEntity -> storyConverter.toStoryResponseDTO(storyEntity, storyEntity.getId(),
-			userEntity.getNickname()));
+		Page<StoryEntity> stories = storyRepository.findAll(pageable);
+		List<StoryListResponseDTO> storyList = stories.stream()
+			.filter(storyEntity -> storyEntity.getUser().getId() == userId)
+			.map(storyEntity -> storyConverter.toStoryListResponseDTO(storyEntity))
+			.collect(Collectors.toList());
+
+		return new PageImpl<StoryListResponseDTO>(storyList);
 	}
 
 	@Override
-	public StoryResponseDTO getStoryDetail(Long storyId) {
+	@Transactional(readOnly = true)
+	public Page<StoryListResponseDTO> getStoryList(Pageable pageable) {
+		Page<StoryEntity> stories = storyRepository.findAll(pageable);
+		return stories.map(storyEntity -> storyConverter.toStoryListResponseDTO(storyEntity));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public StoryDetailResponseDTO getStoryDetail(Long storyId) {
 		// 1. Story 유효성 검증
 		StoryEntity storyEntity = storyRepository.findById(storyId)
 			.orElseThrow(() -> new CustomException(ErrorCode.STORY_NOT_FOUND));
 
-		return storyConverter.toStoryResponseDTO(storyEntity, storyEntity.getId(),
-			userRepository.findById(storyEntity.getUser().getId()).get().getNickname());
+		return storyConverter.toStoryDetailResponseDTO(storyEntity);
 	}
 
 	@Override
-	public void updateStoryTitle(StoryPatchSO storyPatchSO) {
+	public StoryPatchResponseDTO updateStoryTitle(StoryPatchSO storyPatchSO) {
 		// 1. Story 유효성 검증
 		StoryEntity storyEntity = storyRepository.findById(storyPatchSO.getStoryId())
 			.orElseThrow(() -> new CustomException(ErrorCode.STORY_NOT_FOUND));
@@ -82,6 +101,8 @@ public class StoryServiceImpl implements StoryService {
 			.voiceUrl(storyEntity.getVoiceUrl())
 			.user(storyEntity.getUser())
 			.build());
+
+		return storyConverter.toStoryPatchResponseDTO(storyPatchSO);
 	}
 
 	@Override
@@ -96,6 +117,6 @@ public class StoryServiceImpl implements StoryService {
 
 		storyRepository.deleteById(storyDeleteSO.getStoryId());
 
-		return storyConverter.toStoryDeleteResponseDTO(storyDeleteSO, storyEntity);
+		return storyConverter.toStoryDeleteResponseDTO(storyEntity);
 	}
 }

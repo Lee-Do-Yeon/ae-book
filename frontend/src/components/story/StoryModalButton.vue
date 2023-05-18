@@ -19,7 +19,8 @@ export default {
   data () {
     return {
       audio: Object,
-      id: 0
+      id: 0,
+      storyPageSetting: null
     }
   },
   props: {
@@ -43,14 +44,21 @@ export default {
 
     deleteStoryModal () {
       this.id = this.getStoryId
-      this.deleteStoryById(this.id)
+
+      this.storyPageSetting = this.getStoryPageSetting
+
+      if (this.storyPageSetting.numberOfElements === 1) {
+        this.deleteStoryById({id: this.id, flag: true})
+      } else {
+        this.deleteStoryById({id: this.id, flag: false})
+      }
       this.closeModal()
     }
 
   },
 
   computed: {
-    ...mapGetters(storyStore, ['getStoryId'])
+    ...mapGetters(storyStore, ['getStoryId', 'getStoryPageSetting'])
   }
 }
 </script>

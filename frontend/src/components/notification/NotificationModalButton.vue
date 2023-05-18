@@ -5,7 +5,7 @@
   </div>
 </template>
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 const notificationStore = 'notificationStore'
 
 export default {
@@ -14,8 +14,14 @@ export default {
   created () {
 
   },
+  data: function () {
+    return {
+      notificationPageSetting: null
+    }
+  },
   computed: {
-    ...mapState(notificationStore, ['notification', 'notificationList'])
+    ...mapState(notificationStore, ['notification', 'notificationList']),
+    ...mapGetters(notificationStore, ['getNotificationPageSetting'])
   },
   mounted () {
     this.getBookNotificationList(this.request)
@@ -29,11 +35,15 @@ export default {
       console.log('수정')
     },
     cancelNotification (notificationId) {
-      console.log('삭제')
-      console.log(notificationId)
       if (confirm('알림을 취소하시겠습니까?')) {
         this.notificationdelete(notificationId)
           .then(() => {
+            this.notificationPageSetting = this.getNotificationPageSetting
+            if (this.notificationPageSetting.numberOfElements === 1) {
+              this.$emit('paging', this.request.page)
+            } else {
+              this.$emit('paging', this.request.page + 1)
+            }
             this.closeModal()
           })
       }

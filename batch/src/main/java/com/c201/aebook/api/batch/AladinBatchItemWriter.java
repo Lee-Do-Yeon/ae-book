@@ -36,9 +36,10 @@ public class AladinBatchItemWriter implements ItemWriter<BookEntity> {
 
 				bookRepository.save(updateBook);
 
-				//알림 이벤트 발생
-				publisher.publishEvent(new NotificationEvent(this, updateBook, item));
-
+				//기존 가격보다 최저가인 경우 알림 이벤트 발생
+				if(book.get().getPrice() > item.getPrice()){
+					publisher.publishEvent(new NotificationEvent(this, updateBook, item));
+				}
 			} else {
 				bookRepository.save(item);
 			}

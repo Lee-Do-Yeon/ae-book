@@ -1,6 +1,7 @@
 from fastapi import FastAPI,File,UploadFile,Form
 from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 from review_star_prediction import *
+from curse_detection import *
 from isbn_ocr import *
 from dotenv import load_dotenv
 import os
@@ -85,6 +86,12 @@ async def create_review(data:Dict[Any,Any]):
     writer = data["writer"]
     length = np.random.choice(REVIEWLENGTH)
     
+    curse_recognition = detect_curse(words)
+    
+    if curse_recognition == 1:
+        
+        return {"review":'', "star":0, "respond":2}
+    
     # message 구성    
     m = f"너는 {writer}의 {title}이라는 책을 읽은 사람이야. 너에 대한 자기소개는 하지 말고 {words}를 키워드로 해서 서평, 키워드라는 말을 쓰지 말고 서평을 {length}자 이내로 써줘"
     
@@ -102,7 +109,7 @@ async def create_review(data:Dict[Any,Any]):
     #predicted star point
     star = predict_star_point(response)
     
-    return {"review":response, "star":star}
+    return {"review":response, "star":star, "respond":1}
 
 
 """
@@ -133,6 +140,10 @@ async def sound_to_review(audio: UploadFile = File(...), title: str = Form(...),
             
             return {"words": '', "review":'', "star":0, "respond":0}
         
+        elif detect_curse(words) == 1:
+            
+            return {"words": '', "review":'', "star":0, "respond":2}
+        
         length = np.random.choice(REVIEWLENGTH)
         
         review,star = create_gpt_review(title,words,writer,length)
@@ -141,7 +152,7 @@ async def sound_to_review(audio: UploadFile = File(...), title: str = Form(...),
     
     else:
         
-        return {"words": '', "review":'', "star":0, "respond":0}
+        return {"words": '', "review":'', "star":0, "respond":3}
     
     
 #convert image to sketch
@@ -240,6 +251,10 @@ output: chatgpt story, sound
 @app.post("/fast/stories/gpt")
 async def create_story(text:Dict[Any,Any]):
     
+    if detect_curse(text['text']) == 1:
+        
+        return {'story': '', 'respond':2}
+    
     length = np.random.choice(STORYLENGTH)
     
     #chatgpt query
@@ -256,7 +271,7 @@ async def create_story(text:Dict[Any,Any]):
     #chatgpt response
     story = completion.choices[0].message['content']
     
-    return {'story': story}
+    return {'story': story, 'respond':1}
 
 """
 input:text

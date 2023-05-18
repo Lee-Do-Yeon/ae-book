@@ -13,7 +13,15 @@ const paintingStore = 'paintingStore'
 export default {
   name: 'PaintingModalButton',
   computed: {
-    ...mapState(paintingStore, ['painting'])
+    ...mapState(paintingStore, ['painting', 'paintingPageSetting'])
+  },
+  props: {
+    nowType: {
+      type: String
+    },
+    nowPage: {
+      type: Number
+    }
   },
   methods: {
     ...mapActions('paintingStore', ['downloadPainting', 'deletePainting', 'updatePaintingTitle']),
@@ -22,9 +30,13 @@ export default {
       this.$emit('close')
     },
     clickDelete (id) {
+      if (this.paintingPageSetting.numberOfElements === 1) {
+        this.nowPage = this.nowPage - 1
+      }
       let request = {
         paintingId: id,
-        type: 'COLOR'
+        type: this.nowType,
+        page: this.nowPage
       }
       this.deletePainting(request)
       this.closeModal()

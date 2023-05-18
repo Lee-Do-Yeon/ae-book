@@ -51,8 +51,7 @@ public class BatchJobConfig {
 			.writer(aladinBatchItemWriter)
 			.faultTolerant()
 			.retryLimit(3) //재시도 3번 가능
-			.retry(DataAccessException.class)
-			.retry(ConnectionPoolTimeoutException.class)
+			.retry(Exception.class)
 			.skip(Exception.class)
 			.skipLimit(100)
 			.listener(bookIntegrationStepListener)

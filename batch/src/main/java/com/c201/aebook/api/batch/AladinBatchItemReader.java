@@ -36,8 +36,8 @@ public class AladinBatchItemReader implements ItemReader<BookEntity> {
 		if (bookList.size() == 0) {
 			try {
 				bookList = getDataFromApi();
-				log.info("list size=" + bookList.size());
 			} catch (Exception e) {
+				log.error("aladin read error", e);
 				throw new Exception();
 			}
 		}

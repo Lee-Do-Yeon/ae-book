@@ -76,9 +76,9 @@ public class PaintingController {
 
 		// 그림 DB 저장
 		PaintingSO paintingSO = paintingConverter.toPaintingSO(userId, uploadImageUrl, paintingRequestDTO);
-		paintingService.savePainting(paintingSO);
+		PaintingResponseDTO paintingResponseDTO = paintingService.savePainting(paintingSO);
 
-		return new BaseResponse<>(null, HttpStatus.OK.value(), ApplicationConstants.SUCCESS);
+		return new BaseResponse<>(paintingResponseDTO, HttpStatus.OK.value(), ApplicationConstants.SUCCESS);
 	}
 
 	@Operation(summary = "그림 다운로드", description = "그림을 다운로드합니다.")

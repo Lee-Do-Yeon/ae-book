@@ -45,11 +45,10 @@ public class NotificationServiceImpl implements NotificationService {
     private String aebookUrl;
 
     private final NotificationRepository notificationRepository;
+    private final RestTemplate restTemplate;
 
     @Override
     public String createToken() throws JsonProcessingException, ParseException {
-        RestTemplate rt = new RestTemplate();
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
@@ -59,7 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
         HttpEntity<MultiValueMap<String, Object>> TokenRequest = new HttpEntity<>(params);
 
         //7일 동안 사용 가능한 엑세스 토큰을 발급 받기
-        ResponseEntity<String> accessTokenResponse = rt.exchange(
+        ResponseEntity<String> accessTokenResponse = restTemplate.exchange(
                 "https://kakaoapi.aligo.in/akv10/token/create/7/d/",
                 HttpMethod.POST,
                 TokenRequest,
@@ -96,9 +95,6 @@ public class NotificationServiceImpl implements NotificationService {
         Map<String, List<Map>> buttonInfo = new HashMap<>(); // 버튼 정보
         buttonInfo.put("button", button);
 
-        // 전송 객체 생성
-        RestTemplate rt = new RestTemplate();
-
         // header와 body 생성
         HttpHeaders headers = new HttpHeaders();
 
@@ -125,7 +121,7 @@ public class NotificationServiceImpl implements NotificationService {
         HttpEntity<MultiValueMap<String, Object>> LowestPriceRequest = new HttpEntity<>(body);
 
         //post로 보내고 결과 받기
-        ResponseEntity<String> LowestPriceResponse = rt.exchange(
+        ResponseEntity<String> LowestPriceResponse = restTemplate.exchange(
                 "https://kakaoapi.aligo.in/akv10/alimtalk/send/",
                 HttpMethod.POST,
                 LowestPriceRequest,
@@ -150,9 +146,6 @@ public class NotificationServiceImpl implements NotificationService {
         button.add(buttonMap);
         Map<String, List<Map>> buttonInfo = new HashMap<>(); // 버튼 정보
         buttonInfo.put("button", button);
-
-        // 전송 객체 생성
-        RestTemplate rt = new RestTemplate();
 
         // header와 body 생성
         HttpHeaders headers = new HttpHeaders();
@@ -185,7 +178,7 @@ public class NotificationServiceImpl implements NotificationService {
             HttpEntity<MultiValueMap<String, Object>> LowestPriceRequest = new HttpEntity<>(body);
 
             //post로 보내고 결과 받기
-            customizeLowestPriceTalk = rt.exchange(
+            customizeLowestPriceTalk = restTemplate.exchange(
                     "https://kakaoapi.aligo.in/akv10/alimtalk/send/",
                     HttpMethod.POST,
                     LowestPriceRequest,

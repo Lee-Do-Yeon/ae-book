@@ -104,8 +104,8 @@ export default {
       let x, y
       if (this.isPainting) {
         if (event.type === 'touchmove') {
-          x = event.touches[0].clientX - this.canvas.offsetLeft
-          y = event.touches[0].clientY - this.canvas.offsetTop
+          x = event.touches[0].clientX - this.canvas.offsetLeft + window.scrollX
+          y = event.touches[0].clientY - this.canvas.offsetTop + window.scrollY
         } else {
           x = event.offsetX
           y = event.offsetY

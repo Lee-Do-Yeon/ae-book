@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,21 +43,29 @@ public class ItemReaderDelegate {
 	private final int maxResults = 50;
 	private final String queryType = "ItemNewAll";
 	private final RestTemplate restTemplate;
+	private final int OUT_OF_STOCK_FILTER = 1;
+	private final String COVER_SIZE = "Big";
 	@Value("${aladin.api.key}")
 	private String API_KEY;
 
-	private final int OUT_OF_STOCK_FILTER = 1;
-	private final String COVER_SIZE = "Big";
-
-
-	public List<BookEntity> getBookListFromAPI() throws Exception{
+	public List<BookEntity> getBookListFromAPI() throws Exception {
 		return getDataFromApi();
 	}
 
-	public BookEntity getParsing(Node itemNode) throws Exception{
+	public Optional<BookEntity> getParsing(Node itemNode) throws Exception {
 		return parseBook(itemNode);
 	}
 
+	public String replaceCharacterFromText(String text) {
+		return replaceCharacter(text);
+	}
+
+	public NodeList getElementsByUrl(UriComponentsBuilder builder, String tagName) throws
+		IOException,
+		ParserConfigurationException,
+		SAXException {
+		return getItemElementByUrl(builder, tagName);
+	}
 
 	private List<BookEntity> getDataFromApi() throws
 		IOException,
@@ -80,19 +89,16 @@ public class ItemReaderDelegate {
 				.queryParam("outofStockfilter", OUT_OF_STOCK_FILTER)
 				.queryParam("Cover", COVER_SIZE);
 
-
 			NodeList itemNodes = getItemElementByUrl(builder, "item");
-			if(itemNodes == null) throw new IOException();
-
+			if (itemNodes == null) {
+				throw new IOException();
+			}
 
 			for (int i = 0; i < itemNodes.getLength(); i++) {
 				Node itemNode = itemNodes.item(i);
-				BookEntity entity = parseBook(itemNode);
+				Optional<BookEntity> entity = parseBook(itemNode);
 
-				if(entity != null) {
-					books.add(entity);
-				}
-
+				entity.ifPresent(books::add);
 			}
 
 		}
@@ -100,15 +106,11 @@ public class ItemReaderDelegate {
 		return books;
 	}
 
-	private BookEntity parseBook(Node itemNode) throws
+	private Optional<BookEntity> parseBook(Node itemNode) throws
 		ParseException,
 		ParserConfigurationException,
 		IOException,
 		SAXException {
-
-		String adultBookCheck = getChildText(itemNode, "adult");
-
-		if("true".equals(adultBookCheck)) return null;//성인 책인 경우
 
 		String title = getChildText(itemNode, "title");
 		String author = getChildText(itemNode, "author");
@@ -116,36 +118,41 @@ public class ItemReaderDelegate {
 		String pubDate = getChildText(itemNode, "pubDate");
 		String coverUrl = getChildText(itemNode, "cover");
 		String description = getChildText(itemNode, "description");
+		String adultBookCheck = getChildText(itemNode, "adult");
 
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Date date = new Date();
-		if(pubDate != null){
-			date = format.parse(pubDate);
+		if ("true".equals(adultBookCheck) || checkNullData(author) || checkNullData(title) || checkNullData(pubDate)
+			|| checkNullData(publisher) || checkNullData(description) || checkNullData(coverUrl)) {
+			return Optional.empty();
 		}
 
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = format.parse(pubDate);
 
 		//하위 태그인 subInfo에 접근
-		NodeList nodeList = itemNode.getChildNodes();
-		Node subInfoNode = getChildNode(nodeList, "subInfo");
+		Optional<Node> subInfoNode = getChildNode(itemNode, "subInfo");
 
-		NodeList subInfoList = subInfoNode.getChildNodes();
-		Node usedListNode = getChildNode(subInfoList, "usedList");
+		if(!subInfoNode.isPresent()){
+			return Optional.empty();
+		}
 
-		NodeList userUsedList = usedListNode.getChildNodes();
+		Optional<Node> usedListNode = getChildNode(subInfoNode.get(), "usedList");
 
-		Node userUsedNode = getChildNode(userUsedList, "userUsed");
-		Node aladinUsedNode = getChildNode(userUsedList, "aladinUsed");
-		Node spaceUsedNode = getChildNode(userUsedList, "spaceUsed");
+		NodeList subInfoList = subInfoNode.get().getChildNodes();
+		NodeList userUsedList = usedListNode.get().getChildNodes();
 
-		int userUsedPrice = parseToInteger(userUsedNode, "minPrice");//회원 직접 배송 중고의 보유 상품중 최저가 상품 판매가격
-		int newUsedBookprice = parseToInteger(itemNode, "priceSales");//새로 들어온 중고책 가격
-		int aladinUsedPrice = parseToInteger(aladinUsedNode, "minPrice");//알라딘 직접 배송 중고의 보유 상품중 최저가 상품 판매가격
-		int spaceUsedPrice = parseToInteger(spaceUsedNode, "minPrice");//광활한 우주점(매장 배송) 중고의 보유 상품중 최저가 상품 판매가격
+		Node userUsedNode = getChildNodeByTagName(userUsedList, "userUsed");
+		Node aladinUsedNode = getChildNodeByTagName(userUsedList, "aladinUsed");
+		Node spaceUsedNode = getChildNodeByTagName(userUsedList, "spaceUsed");
+
+		int userUsedPrice = (int)parseToNumber(userUsedNode, "minPrice");//회원 직접 배송 중고의 보유 상품중 최저가 상품 판매가격
+		int newUsedBookprice = (int)parseToNumber(itemNode, "priceSales");//새로 들어온 중고책 가격
+		int aladinUsedPrice = (int)parseToNumber(aladinUsedNode, "minPrice");//알라딘 직접 배송 중고의 보유 상품중 최저가 상품 판매가격
+		int spaceUsedPrice = (int)parseToNumber(spaceUsedNode, "minPrice");//광활한 우주점(매장 배송) 중고의 보유 상품중 최저가 상품 판매가격
 
 		//보유 상품수
-		int aladinUsedItemCount = parseToInteger(aladinUsedNode, "itemCount");
-		int spaceUsedItemCount = parseToInteger(spaceUsedNode, "itemCount");
-		int userUsedItemCount = parseToInteger(userUsedNode, "itemCount");
+		int aladinUsedItemCount = (int)parseToNumber(aladinUsedNode, "itemCount");
+		int spaceUsedItemCount = (int)parseToNumber(spaceUsedNode, "itemCount");
+		int userUsedItemCount = (int)parseToNumber(userUsedNode, "itemCount");
 
 		ArrayList<Integer> prices = new ArrayList<>();
 		prices.add(newUsedBookprice);
@@ -164,20 +171,23 @@ public class ItemReaderDelegate {
 		//최저가 구함
 		int minPriceResult = getMinPrice(prices);
 
-		String isbn;
-		String aladinUrl;
+		String isbn = "";
+		String aladinUrl = "";
 
 		long newUsedBookId = 0;
-		if (itemNode.getAttributes().getNamedItem("itemId").getTextContent() != null) {
+		if (!checkNullData(itemNode.getAttributes().getNamedItem("itemId").getTextContent())) {
 			newUsedBookId = Integer.parseInt(itemNode.getAttributes().getNamedItem("itemId").getTextContent());
 		}
 
-		Node newBookParentNode = getChildNode(subInfoList, "newBookList");
-		NodeList newBookList = newBookParentNode.getChildNodes();
-		Node newBookNode = getChildNode(newBookList, "newBook");
-		long usedBookId = parseToInteger(newBookNode, "itemId");
+		Node newBookParentNode = getChildNodeByTagName(subInfoList, "newBookList");
+		Optional<Node> newBookNode = getChildNode(newBookParentNode, "newBook");
+		if(!newBookNode.isPresent()){
+			return Optional.empty();
+		}
 
-		long minPriceBookId;
+		long usedBookId = parseToNumber(newBookNode.get(), "itemId");
+
+		long minPriceBookId = 0;
 
 		//최저가 가격의 알라딘 url 얻어옴
 		if (minPriceResult == newUsedBookprice) {
@@ -195,7 +205,7 @@ public class ItemReaderDelegate {
 			}
 			minPriceBookId = usedBookId;
 			//isbn 구함
-			String subInfoIsbn = getChildText(newBookNode, "isbn");
+			String subInfoIsbn = getChildText(newBookNode.get(), "isbn");
 
 			//도서 상세 페이지로 접속
 			String detailUrl = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx";
@@ -211,7 +221,13 @@ public class ItemReaderDelegate {
 			isbn = getChildText(itemNodes.item(0), "isbn13");
 		}
 
-		if(minPriceBookId == 0 || isbn == null || isbn.isEmpty() || aladinUrl == null || aladinUrl.isEmpty() || author == null || author.isEmpty() || minPriceResult == 0) return null;
+		if (minPriceBookId == 0 || checkNullData(isbn) || checkNullData(aladinUrl) || minPriceResult == 0) {
+			return Optional.empty();
+		}
+
+		//특수 문자 제거
+		title = replaceCharacter(title);
+		description = replaceCharacter(description);
 
 		BookEntity book = BookEntity.builder()
 			.id(minPriceBookId)
@@ -226,7 +242,7 @@ public class ItemReaderDelegate {
 			.price(minPriceResult)
 			.build();
 
-		return book;
+		return Optional.ofNullable(book);
 	}
 
 	private NodeList getItemElementByUrl(UriComponentsBuilder builder, String tagName) throws
@@ -234,8 +250,7 @@ public class ItemReaderDelegate {
 		SAXException,
 		ParserConfigurationException {
 
-		ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, null,
-			String.class);
+		ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, String.class);
 
 		if (response == null || response.getBody() == null) {
 			throw new RuntimeException("API response is null or has no body.");
@@ -252,13 +267,10 @@ public class ItemReaderDelegate {
 	}
 
 	/*
-	 * 해당 태그의 값을 Integer로 변환
+	 * 해당 태그의 값을 숫자로 변환
 	 * */
-	private int parseToInteger(Node nodeItem, String tagName) {
-		if (getChildText(nodeItem, tagName) != null) {
-			return Integer.parseInt(getChildText(nodeItem, tagName));
-		}
-		return 0;
+	private long parseToNumber(Node nodeItem, String tagName) {
+		return getChildText(nodeItem, tagName) != null ?  Long.parseLong(getChildText(nodeItem, tagName)) : 0;
 	}
 
 	/*
@@ -271,7 +283,7 @@ public class ItemReaderDelegate {
 	/*
 	 * 해당 태그 이름에 해당하는 노드 가져옴
 	 * */
-	private Node getChildNode(NodeList itemNode, String tagName) {
+	private Node getChildNodeByTagName(NodeList itemNode, String tagName) {
 		for (int i = 0; i < itemNode.getLength(); i++) {
 			Node node = itemNode.item(i);
 			if (tagName.equals(node.getNodeName())) {
@@ -286,8 +298,9 @@ public class ItemReaderDelegate {
 	 * 해당 태그의 text를 가져옴
 	 * */
 	private String getChildText(Node itemNode, String tagName) {
-		if (itemNode == null)
+		if (itemNode == null) {
 			return null;
+		}
 
 		NodeList nodeList = itemNode.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -299,6 +312,31 @@ public class ItemReaderDelegate {
 		}
 		//해당 태그의 노드가 없는 경우 null 반환
 		return null;
+	}
+
+	/*
+	 * 특수 문자 제거 함수
+	 * */
+	private String replaceCharacter(String context) {
+		String result = context;
+		result = result.replaceAll("&quot;", "\"");
+		result = result.replaceAll("&amp;", "&");
+		result = result.replaceAll("&nbsp;", " ");
+		result = result.replaceAll("&lt;", "<");
+		result = result.replaceAll("&gt;", ">");
+		return result;
+	}
+
+	/*
+	 * null 체크
+	 * */
+	private boolean checkNullData(String data) {
+		return data == null || data.isEmpty();
+	}
+
+	private Optional<Node> getChildNode(Node parentNode, String tagName) {
+		NodeList nodeList = parentNode.getChildNodes();
+		return Optional.ofNullable(getChildNodeByTagName(nodeList, tagName));
 	}
 
 }

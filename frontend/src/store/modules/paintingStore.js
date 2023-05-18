@@ -66,9 +66,6 @@ const paintingStore = {
         .then(({ data }) => {
           dispatch('getPaintingList', {type: 'COLOR'})
         })
-        .catch(error => {
-          console.error(error)
-        })
     },
     async getPaintingList ({ commit }, request) {
       await getPaintingList(request)
@@ -76,26 +73,17 @@ const paintingStore = {
           commit('SET_PAINTING_LIST', data.result.content)
           commit('SET_PAGE_SETTING', data.result)
         })
-        .catch(error => {
-          alert(error)
-        })
     },
     async convertSketch ({ commit }, request) {
       await convertSketch(request)
         .then(({ data }) => {
           commit('SET_SKETCH', {url: data, type: 'sketch'})
         })
-        .catch(error => {
-          alert(error)
-        })
     },
     async getPaintingDetail ({ commit }, request) {
       await getPaintingDetail(request)
         .then(({ data }) => {
           commit('SET_PAINTING', data.result)
-        })
-        .catch(error => {
-          alert(error)
         })
     },
     async downloadPainting ({ state }, paintingId) {
@@ -118,9 +106,9 @@ const paintingStore = {
           // 메모리 누수 방지
           URL.revokeObjectURL(downloadLink.href)
         })
-        .catch(error => {
-          alert('그림 다운로드에 실패했습니다.' + error)
-        })
+        .catch(
+          alert('그림 다운로드에 실패했습니다.')
+        )
     },
     async deletePainting ({ dispatch }, request) {
       await deletePainting(request.paintingId)
@@ -128,9 +116,9 @@ const paintingStore = {
           alert('그림을 성공적으로 삭제했습니다.')
           dispatch('getPaintingList', request)
         })
-        .catch(error => {
-          alert('그림 삭제에 실패했습니다.' + error)
-        })
+        .catch(
+          alert('그림 삭제에 실패했습니다.')
+        )
     },
     async updatePaintingTitle ({ commit }, request) {
       await updatePaintingTitle(request)
@@ -139,17 +127,14 @@ const paintingStore = {
           commit('SET_PAINTING', data.result)
           commit('UPDATE_PAINTING', data.result)
         })
-        .catch(error => {
-          alert('그림 제목을 수정에 실패했습니다.' + error)
-        })
+        .catch(
+          alert('그림 제목을 수정에 실패했습니다.')
+        )
     },
     async getNewPainting ({ commit }, request) {
       await getNewPainting(request)
         .then(({ data }) => {
           commit('SET_MAIN_PAINTING_LIST', data.result)
-        })
-        .catch(error => {
-          alert(error)
         })
     }
   }

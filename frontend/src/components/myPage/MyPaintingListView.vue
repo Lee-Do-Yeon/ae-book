@@ -4,7 +4,7 @@
     <div style="height:2px; background-color: #E0E0E0;"></div>
     <ModalView :modalShow="isModalVisible" @close-modal="closeModal">
     <painting-detail-view/>
-    <painting-modal-button @close="closeModal"></painting-modal-button>
+    <painting-modal-button @close="closeModal" :nowType="'COLOR'" :nowPage="this.request.page"></painting-modal-button>
     </ModalView>
     <div v-if="paintingList.length !== 0">
     <div class="painting-container">
@@ -47,7 +47,9 @@ export default {
   data () {
     return {
       isModalVisible: false,
-      request: null
+      request: {
+        page: 0
+      }
     }
   },
   computed: {

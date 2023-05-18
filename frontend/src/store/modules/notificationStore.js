@@ -17,6 +17,9 @@ const notificationStore = {
     },
     getNotificationList: state => {
       return state.notificationList
+    },
+    getNotificationPageSetting: state => {
+      return state.notificationPageSetting
     }
   },
   mutations: {
@@ -73,12 +76,8 @@ const notificationStore = {
         })
     },
     async notificationdelete ({ commit }, notificationId) {
-      console.log('삭제')
       await deleteNotification(notificationId)
         .then(({ data }) => {
-          console.log(data)
-          commit('RESET_NOTIFICATION_LIST')
-          this.getBookNotificationList()
         })
         .catch(error => {
           console.log(error)

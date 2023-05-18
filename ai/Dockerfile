@@ -7,7 +7,7 @@ RUN pip install git+https://git@github.com/SKTBrain/KoBERT.git@master
 
 RUN pip install 'git+https://github.com/SKTBrain/KoBERT.git#egg=kobert_tokenizer&subdirectory=kobert_hf'
 
-RUN pip install torch==1.13.1
+RUN pip install transformers==4.10.1
 
 RUN apt-get update
 RUN apt-get -y install libgl1-mesa-glx

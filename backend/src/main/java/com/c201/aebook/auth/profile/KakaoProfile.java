@@ -1,9 +1,11 @@
 package com.c201.aebook.auth.profile;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class KakaoProfile {
 
     public Long id;
@@ -13,7 +15,10 @@ public class KakaoProfile {
 
     @Getter
     @Setter
-    public class Properties {
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Properties {
         public String nickname;
         public String profile_image;
         public String thumbnail_image;
@@ -21,7 +26,10 @@ public class KakaoProfile {
 
     @Getter
     @Setter
-    public class KakaoAccount {
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class KakaoAccount {
         public Boolean profile_nickname_needs_agreement;
         public Boolean profile_image_needs_agreement;
         public Profile profile;
@@ -33,7 +41,10 @@ public class KakaoProfile {
 
         @Getter
         @Setter
-        public class Profile {
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class Profile {
             public String nickname;
             public String thumbnail_image_url;
             public String profile_image_url;

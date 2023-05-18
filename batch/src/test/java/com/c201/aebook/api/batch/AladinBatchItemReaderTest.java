@@ -87,13 +87,4 @@ public class AladinBatchItemReaderTest {
 
 	}
 
-	@Test
-	void testParseBook() {
-
-	}
-
-	@Test
-	void testGetItemElementByUrl() {
-	}
-
 }

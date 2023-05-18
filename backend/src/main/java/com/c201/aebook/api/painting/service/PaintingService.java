@@ -11,7 +11,7 @@ import com.c201.aebook.api.vo.PaintingPatchSO;
 import com.c201.aebook.api.vo.PaintingSO;
 
 public interface PaintingService {
-	public void savePainting(PaintingSO paintingSO);
+	public PaintingResponseDTO savePainting(PaintingSO paintingSO);
 
 	public Page<PaintingResponseDTO> getPaintingList(Long userId, PaintingType type, Pageable pageable);
 

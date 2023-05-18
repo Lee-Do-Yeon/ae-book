@@ -4,7 +4,7 @@
     <div style="height:2px; background-color: #E0E0E0;"></div>
     <ModalView :modalShow="isModalVisible" @close-modal="closeModal">
       <notification-detail-view :notificationId="notificationId" :page="this.request.page" :isbn="isbn"/>
-      <notification-modal-button :notificationId="notificationId" :request="this.request" @close="closeModal"></notification-modal-button>
+      <notification-modal-button :notificationId="notificationId" :request="this.request" @close="closeModal" @paging="paging"></notification-modal-button>
     </ModalView>
     <div v-if="notificationList.length >=1">
       <div class="notification-container">

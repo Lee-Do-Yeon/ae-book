@@ -98,7 +98,8 @@ export default {
       isRecording: false,
       isLoading: false,
       loadingMessage: 'AI가 글을 쓰고 있습니다...',
-      repeatKey: 0
+      repeatKey: 0,
+      curse: 0
     }
   },
   mounted () {
@@ -148,6 +149,8 @@ export default {
           .then(result => {
             if (result.data.respond === 0) {
               alert('음성인식에 실패했습니다. 다시 말씀해주세요.')
+            } else if (result.data.respond === 2) {
+              alert('욕설이나 혐오적인 표현은 작성할 수 없습니다.')
             } else {
               this.form.keyword = result.data.words
               this.form.content = result.data.review
@@ -174,8 +177,15 @@ export default {
           writer: this.form.writer
         })
         .then(result => {
-          this.form.content = result.data.review
-          this.form.score = result.data.star
+          this.curse = result.data.respond
+
+          if (this.curse === 2) {
+            alert('욕설이나 혐오적인 표현은 작성할 수 없습니다.')
+            this.form.keyword = ''
+          } else {
+            this.form.content = result.data.review
+            this.form.score = result.data.star
+          }
           this.isLoading = false
         })
         .catch(err => {

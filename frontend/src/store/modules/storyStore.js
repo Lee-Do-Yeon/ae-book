@@ -1,4 +1,4 @@
-import { searchStory, registerStory, updateStoryTitle, deleteStory } from '@/api/story'
+import { searchMyStory, registerStory, updateStoryTitle, deleteStory, searchStoryList } from '@/api/story'
 import Vue from 'vue'
 
 const storyStore = {
@@ -45,13 +45,26 @@ const storyStore = {
   getters: {
     getStoryId: state => {
       return state.storyId
+    },
+    getStoryPageSetting: state => {
+      return state.storyPageSetting
     }
   },
 
   actions: {
-    async getStoryList ({commit}, request) {
+    async getMyStoryList ({commit}, request) {
       commit('SET_CURRENT_PAGE', request.page)
-      await searchStory(request)
+      await searchMyStory(request)
+        .then(({data}) => {
+          commit('SET_PAGE_SETTING', data.result)
+          commit('SET_LIST', data.result.content)
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    },
+    async getStoryList ({commit}, request) {
+      await searchStoryList(request)
         .then(({data}) => {
           commit('SET_PAGE_SETTING', data.result)
           commit('SET_LIST', data.result.content)
@@ -64,7 +77,7 @@ const storyStore = {
       await registerStory(request)
         .then(({ data }) => {
           commit('SET_STORY', data.result)
-          searchStory({page: 0})
+          searchStoryList({page: 0})
             .then(({ data }) => {
               commit('SET_PAGE_SETTING', data.result)
               commit('SET_LIST', data.result.content)
@@ -84,12 +97,19 @@ const storyStore = {
           alert('수정에 실패했습니다. ' + error)
         })
     },
-    async deleteStoryById ({ commit, state }, storyId) {
+    async deleteStoryById ({ commit, state }, payload) {
+      const storyId = payload.id
+      const flag = payload.flag
+      if (flag === true) {
+        commit('SET_CURRENT_PAGE', state.currentPage - 1)
+      } else {
+        commit('SET_CURRENT_PAGE', state.currentPage)
+      }
       await deleteStory(storyId)
         .then(({data}) => {
           alert('성공적으로 삭제했습니다.')
           commit('DELETE_STORY', data.result)
-          searchStory({page: state.currentPage})
+          searchMyStory({page: state.currentPage})
             .then(({ data }) => {
               commit('SET_PAGE_SETTING', data.result)
               commit('SET_LIST', data.result.content)

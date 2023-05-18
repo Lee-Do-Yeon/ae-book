@@ -5,13 +5,13 @@ import java.time.LocalDateTime;
 import com.c201.aebook.api.painting.persistence.entity.PaintingType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 public class PaintingResponseDTO {
 	@Schema(description = "그림 ID", defaultValue = "1")
 	private Long id;

@@ -24,8 +24,9 @@ import com.c201.aebook.api.common.BaseResponse;
 import com.c201.aebook.api.story.presentation.dto.request.StoryPatchRequestDTO;
 import com.c201.aebook.api.story.presentation.dto.request.StoryRequestDTO;
 import com.c201.aebook.api.story.presentation.dto.response.StoryDeleteResponseDTO;
+import com.c201.aebook.api.story.presentation.dto.response.StoryDetailResponseDTO;
+import com.c201.aebook.api.story.presentation.dto.response.StoryListResponseDTO;
 import com.c201.aebook.api.story.presentation.dto.response.StoryPatchResponseDTO;
-import com.c201.aebook.api.story.presentation.dto.response.StoryResponseDTO;
 import com.c201.aebook.api.story.presentation.dto.response.StorySaveResponseDTO;
 import com.c201.aebook.api.story.presentation.validator.StoryValidator;
 import com.c201.aebook.api.story.service.StoryService;
@@ -76,19 +77,18 @@ public class StoryController {
 
 		// 동화 내용 DB 저장
 		StorySO storySO = storyConverter.toStorySO(userId, uploadVoiceUrl, uploadImageUrl, storyRequestDTO);
-		storyService.saveStory(storySO);
 
-		StorySaveResponseDTO storySaveResponseDTO = storyConverter.toStorySaveResponseDTO(uploadVoiceUrl,
-			uploadImageUrl, storyRequestDTO);
+
+		StorySaveResponseDTO storySaveResponseDTO = storyService.saveStory(storySO);
 
 		return new BaseResponse<>(storySaveResponseDTO, HttpStatus.OK.value(), "동화 작성 완료");
 	}
 
 	@Operation(summary = "로그인 유저의 동화 리스트", description = "마이페이지에서 보여줄 나의 동화 리스트")
 	@GetMapping(
-		path = ""
+		path = "/my"
 	)
-	public BaseResponse<?> getStoryList(
+	public BaseResponse<?> getStoryListByUserId(
 		@AuthenticationPrincipal CustomUserDetails customUserDetails,
 		@PageableDefault(size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
 	) {
@@ -96,9 +96,22 @@ public class StoryController {
 		Long userId = Long.parseLong(customUserDetails.getUsername());
 
 		// 해당 유저의 동화 리스트 추출
-		Page<StoryResponseDTO> stories = storyService.getStoryList(userId, pageable);
+		Page<StoryListResponseDTO> stories = storyService.getStoryListByUserId(userId, pageable);
 
 		return new BaseResponse<>(stories, HttpStatus.OK.value(), "나의 동화책 리스트가 정상적으로 도착했습니다.");
+	}
+
+	@Operation(summary = "전체 유저의 동화 리스트", description = "동화 목록에서 보여줄 전체 동화 리스트")
+	@GetMapping(
+		path = ""
+	)
+	public BaseResponse<?> getStoryList(
+		@PageableDefault(size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+		// 해당 유저의 동화 리스트 추출
+		Page<StoryListResponseDTO> stories = storyService.getStoryList(pageable);
+
+		return new BaseResponse<>(stories, HttpStatus.OK.value(), "전체 리스트가 정상적으로 도착했습니다.");
 	}
 
 	@Operation(summary = "특정 동화의 상세 정보 조회", description = "특정 동화의 상세 정보 조회")
@@ -108,9 +121,9 @@ public class StoryController {
 	public BaseResponse<?> getStoryDetail(
 		@PathVariable(name = "storyId") Long storyId
 	) {
-		StoryResponseDTO storyResponseDTO = storyService.getStoryDetail(storyId);
+		StoryDetailResponseDTO storyDetailResponseDTO = storyService.getStoryDetail(storyId);
 
-		return new BaseResponse<>(storyResponseDTO, HttpStatus.OK.value(), "특정 동화의 정보가 정상적으로 도착했습니다");
+		return new BaseResponse<>(storyDetailResponseDTO, HttpStatus.OK.value(), "특정 동화의 정보가 정상적으로 도착했습니다");
 	}
 
 	@Operation(summary = "특정 동화의 제목 변경", description = "특정 동화의 제목 변경")
@@ -128,8 +141,7 @@ public class StoryController {
 			storyPatchRequestDTO);
 		storyService.updateStoryTitle(storyPatchSO);
 
-		StoryPatchResponseDTO storyPatchResponseDTO = storyConverter.toStoryPatchResponseDTO(storyPatchRequestDTO,
-			storyId);
+		StoryPatchResponseDTO storyPatchResponseDTO = storyService.updateStoryTitle(storyPatchSO);
 
 		return new BaseResponse<>(storyPatchResponseDTO, HttpStatus.OK.value(), "특정 동화의 제목이 정상적으로 변경되었습니다.");
 	}

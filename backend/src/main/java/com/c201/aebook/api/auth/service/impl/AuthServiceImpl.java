@@ -51,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RestTemplate restTemplate;
 
     /**
      * 인가코드로 요청하여 카카오 AccessToken을 발급 받는 기능
@@ -59,8 +60,6 @@ public class AuthServiceImpl implements AuthService {
      * */
     @Override
     public KakaoTokenDTO getAccessToken(String code) {
-        RestTemplate rt = new RestTemplate();
-
         // 1. Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -75,14 +74,12 @@ public class AuthServiceImpl implements AuthService {
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(params, headers);
 
         // 3. 카카오 Access token 발급 받기
-        ResponseEntity<String> accessTokenResponse = rt.exchange(
+        ResponseEntity<String> accessTokenResponse = restTemplate.exchange(
                 "https://kauth.kakao.com/oauth/token",
                 HttpMethod.POST,
                 kakaoTokenRequest,
                 String.class
         );
-
-        // log.info("access : {}", accessTokenResponse);
 
         // 4. 발급 받은 카카오 Access token 정보 중 필요한 정보만 KakaoTokenDto에 저장
         ObjectMapper objectMapper = new ObjectMapper();
@@ -103,8 +100,6 @@ public class AuthServiceImpl implements AuthService {
      * */
     @Override
     public KakaoProfile findProfile(String token) {
-        RestTemplate rt = new RestTemplate();
-
         // 1. Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
@@ -114,7 +109,7 @@ public class AuthServiceImpl implements AuthService {
                 new HttpEntity<>(headers);
 
         // 2. Http 요청 (POST 방식) 후, response 변수에 유저 프로필 정보를 받기
-        ResponseEntity<String> kakaoProfileResponse = rt.exchange(
+        ResponseEntity<String> kakaoProfileResponse = restTemplate.exchange(
                 "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.POST,
                 kakaoProfileRequest,
@@ -166,7 +161,6 @@ public class AuthServiceImpl implements AuthService {
 
             userRepository.save(user);
         }
-        // log.info("user info : {}", user.getNickname());
 
         // 3. 유저의 token 발급
         TokenDTO tokenDto = jwtTokenProvider.generateTokenDto(String.valueOf(user.getId()));
@@ -220,7 +214,6 @@ public class AuthServiceImpl implements AuthService {
         logoutValueOperations.set(tokenSO.getAccessToken(), tokenSO.getAccessToken());
 
         // 5. 토큰 새로 생성
-        log.info("userId : {}", authentication.getName());
         TokenDTO tokenDTO = jwtTokenProvider.generateTokenDto(authentication.getName());
 
         // 6. Redis에 refreshToken 저장

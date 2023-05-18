@@ -39,13 +39,14 @@ public class PaintingEntity extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private UserEntity user;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "type", nullable = false)
 	private PaintingType type;
 
 	@Builder
-	public PaintingEntity(String title, String fileUrl, UserEntity user, PaintingType type) {
+	public PaintingEntity(Long id, String title, String fileUrl, UserEntity user, PaintingType type) {
+		this.id = id;
 		this.title = title;
 		this.fileUrl = fileUrl;
 		this.user = user;

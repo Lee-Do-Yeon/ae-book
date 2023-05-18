@@ -8,7 +8,7 @@
     <router-link to="/painting/generate"><button class="ae-btn btn-red">선화 만들러 가기</button></router-link>
     <ModalView :modalShow="isModalVisible" @close-modal="closeModal">
       <painting-detail-view  @close="closeModal"/>
-      <painting-modal-button @close="closeModal"></painting-modal-button>
+      <painting-modal-button @close="closeModal" :nowType="nowType" :nowPage="this.request.page"></painting-modal-button>
     </ModalView>
     <div v-if="isLoginUser === false" class="painting-container">
       로그인한 유저만 확인 가능합니다.
@@ -47,7 +47,9 @@ export default {
   name: 'PaintingListView',
   data () {
     return {
-      request: null,
+      request: {
+        page: 0
+      },
       isModalVisible: false,
       isLoginUser: false,
       nowType: 'COLOR'

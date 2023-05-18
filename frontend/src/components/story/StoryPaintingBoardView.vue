@@ -109,31 +109,35 @@ export default {
           text: this.keyword
         })
         .then(result => {
-          console.log(this.storyResult)
-          this.storyResult = result.data.story
-          axios({
-            url: `/fast/stories/sound`,
-            method: 'post',
-            data: {
-              data: this.storyResult
-            }
-          })
-            .then(result => {
-              console.log(result)
-              this.sound_filename = result.data.sound
-              this.storyReady = true
-              axios({
-                url: `/fast/file/download/${this.sound_filename}`,
-                method: 'GET',
-                responseType: 'blob'
-              }).then((response) => {
-                this.voiceBlob = new Blob([response.data], {type: 'audio/mp3'})
-                console.log(this.voiceBlob)
+          if (result.data.respond === 2) {
+            alert('욕설이나 혐오적인 표현은 작성할 수 없습니다.')
+            window.history.back()
+          } else {
+            this.storyResult = result.data.story
+            axios({
+              url: `/fast/stories/sound`,
+              method: 'post',
+              data: {
+                data: this.storyResult
+              }
+            })
+              .then(result => {
+                console.log(result)
+                this.sound_filename = result.data.sound
+                this.storyReady = true
+                axios({
+                  url: `/fast/file/download/${this.sound_filename}`,
+                  method: 'GET',
+                  responseType: 'blob'
+                }).then((response) => {
+                  this.voiceBlob = new Blob([response.data], {type: 'audio/mp3'})
+                  console.log(this.voiceBlob)
+                })
               })
-            })
-            .catch(err => {
-              alert('TTS 생성 중 문제 발생' + err)
-            })
+              .catch(err => {
+                alert('TTS 생성 중 문제 발생' + err)
+              })
+          }
         })
         .catch(err => {
           alert('동화 생성 중 문제 발생' + err)

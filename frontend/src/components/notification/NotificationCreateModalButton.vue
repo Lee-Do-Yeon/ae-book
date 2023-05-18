@@ -19,12 +19,9 @@ export default {
   methods: {
     ...mapActions(notificationStore, ['saveNotification']),
     closeNotificationModal () {
-      console.log('닫기')
       this.$emit('close')
     },
     saveUserNotification () {
-      console.log('알림 저장')
-
       // const payload = {
       //   data: {
       //     isbn: this.isbn,
