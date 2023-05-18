@@ -90,6 +90,7 @@ public class ItemReaderDelegate {
 				.queryParam("Cover", COVER_SIZE);
 
 			NodeList itemNodes = getItemElementByUrl(builder, "item");
+			System.out.println("이놈 ===== " + itemNodes.toString());
 			if (itemNodes == null) {
 				throw new IOException();
 			}
