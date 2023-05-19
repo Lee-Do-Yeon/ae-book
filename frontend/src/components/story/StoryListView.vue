@@ -5,7 +5,7 @@
       <router-link to="/story/keyword"><button class="ae-btn btn-red">동화 만들러 가기</button></router-link>
     </div>
     <ModalView :audio="audio" :modalShow="isModalVisible" @close-modal="closeModal">
-      <StoryDetailView @audio-submit="audioSubmit" @close-modal="closeModal"/>
+      <StoryListDetailView @audio-submit="audioSubmit" @close-modal="closeModal"/>
     </ModalView>
     <div class="story-container">
       <div v-for="story in storyList" :key="story.storyId" @click="showModal(story.storyId)">
@@ -23,7 +23,7 @@
 
 <script>
 import ModalView from '@/components/common/ModalView'
-import StoryDetailView from '@/components/story/StoryDetailView'
+import StoryListDetailView from '@/components/story/StoryListDetailView'
 import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 import ListItem from '../common/list/ListItem.vue'
 import Pagination from '../common/Pagination.vue'
@@ -34,7 +34,7 @@ export default {
   name: 'StoryListView',
   components: {
     ModalView,
-    StoryDetailView,
+    StoryListDetailView,
     ListItem,
     Pagination
   },
